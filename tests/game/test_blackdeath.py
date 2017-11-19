@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2013-2016 The Unknown Horizons Team
+# Copyright (C) 2013-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -24,8 +24,8 @@ from horizons.constants import BUILDINGS
 from horizons.world.disaster.blackdeathdisaster import BlackDeathDisaster
 from tests.game import game_test
 
-
 # FIXTURE is a settlement of tier settlers with a minimum of 16 inhabitants
+
 
 @game_test(use_fixture='blackdeath')
 def test_blackdeath_destroy(s):

@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -29,7 +29,6 @@ from horizons.ai.aiplayer.buildingevaluator import BuildingEvaluator
 from horizons.ai.aiplayer.constants import BUILDING_PURPOSE
 from horizons.constants import BUILDINGS, COLLECTORS, GAME_SPEED, RES
 from horizons.scheduler import Scheduler
-from horizons.util.python import decorators
 from horizons.util.shapes import distances
 
 
@@ -47,7 +46,7 @@ class AbstractFisher(AbstractBuilding):
 		return extra_buildings_needed * self.get_expected_building_cost()
 
 	def iter_potential_locations(self, settlement_manager):
-		options = list(super(AbstractFisher, self).iter_potential_locations(settlement_manager))
+		options = list(super().iter_potential_locations(settlement_manager))
 		personality = settlement_manager.owner.personality_manager.get('AbstractFisher')
 		return settlement_manager.session.random.sample(options, min(len(options), personality.max_options))
 
@@ -59,13 +58,14 @@ class AbstractFisher(AbstractBuilding):
 	def register_buildings(cls):
 		cls._available_buildings[BUILDINGS.FISHER] = cls
 
+
 class FisherEvaluator(BuildingEvaluator):
 	refill_cycle_in_tiles = 12 # TODO: replace this with a direct calculation
 
 	__slots__ = ('__production_level', )
 
 	def __init__(self, area_builder, builder, value):
-		super(FisherEvaluator, self).__init__(area_builder, builder, value)
+		super().__init__(area_builder, builder, value)
 		self.__production_level = None
 
 	def get_expected_production_level(self, resource_id):
@@ -117,7 +117,8 @@ class FisherEvaluator(BuildingEvaluator):
 	def purpose(self):
 		return BUILDING_PURPOSE.FISHER
 
-class FisherSimulator(object):
+
+class FisherSimulator:
 	# TODO: get these values the right way
 	move_time = 12 # in ticks
 	fish_respawn_time = 480 # 30 seconds in ticks
@@ -169,8 +170,5 @@ class FisherSimulator(object):
 				heapq.heappush(heap, (tick + COLLECTORS.DEFAULT_WAIT_TICKS, fisher_coords))
 		return float(fish_caught) / cls.simulation_time
 
-AbstractFisher.register_buildings()
 
-decorators.bind_all(AbstractFisher)
-decorators.bind_all(FisherEvaluator)
-decorators.bind_all(FisherSimulator)
+AbstractFisher.register_buildings()

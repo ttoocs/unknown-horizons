@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -21,19 +21,19 @@
 
 import logging
 import traceback
+from typing import Any, Dict, Optional
 
 from fife import fife
 from fife.extensions.pychan.widgets import Icon
 
 import horizons.globals
-from horizons.ext.typing import Any, Optional
 from horizons.gui.util import load_uh_widget
 from horizons.gui.widgets.imagebutton import CancelButton, OkButton
 from horizons.i18n import gettext as T
 from horizons.util.python.callback import Callback
 
 
-class Window(object):
+class Window:
 
 	def __init__(self, windows=None):
 		# Reference to the window manager. Use it to open new windows or close
@@ -130,7 +130,7 @@ class Dialog(Window):
 	return_events = {} # type: Dict[str, Any]
 
 	def __init__(self, windows):
-		super(Dialog, self).__init__(windows)
+		super().__init__(windows)
 
 		self._gui = None
 		self._hidden = False
@@ -270,7 +270,7 @@ class Popup(Dialog):
 		self.message = message
 		self.show_cancel_button = show_cancel_button
 		self.size = size
-		super(Popup, self).__init__(windows)
+		super().__init__(windows)
 
 	def prepare(self):
 		if self.size == 0:
@@ -298,7 +298,7 @@ class Popup(Dialog):
 			cancel_button.parent.removeChild(cancel_button)
 
 
-class WindowManager(object):
+class WindowManager:
 
 	def __init__(self):
 		self._windows = []
@@ -405,14 +405,14 @@ class WindowManager(object):
 		Guide for writing good error messages:
 		http://www.useit.com/alertbox/20010624.html
 		"""
-		msg = u""
-		msg += description + u"\n"
+		msg = ""
+		msg += description + "\n"
 		if advice:
-			msg += advice + u"\n"
+			msg += advice + "\n"
 		if details:
 			msg += T("Details: {error_details}").format(error_details=details)
 		try:
-			self.open_popup( T("Error: {error_message}").format(error_message=windowtitle),
+			self.open_popup(T("Error: {error_message}").format(error_message=windowtitle),
 			                 msg)
 		except SystemExit: # user really wants us to die
 			raise

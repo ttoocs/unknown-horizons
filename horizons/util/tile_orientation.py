@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -51,7 +51,7 @@ def get_tile_alignment_action(origin, is_similar_tile):
 	action = ''
 
 	# Order is important here.
-	ordered_actions = sorted(BUILDINGS.ACTION.action_offset_dict.iteritems())
+	ordered_actions = sorted(BUILDINGS.ACTION.action_offset_dict.items())
 	for action_part, (xoff, yoff) in ordered_actions:
 		if not is_similar_tile(origin.offset(xoff, yoff)):
 			continue
@@ -66,7 +66,7 @@ def get_tile_alignment_action(origin, is_similar_tile):
 			# direction.
 			fill_left = chr(ord(action_part) - 4) in action
 			# 'h' has the parents 'd' and 'a' (not 'e'), so we need a slight hack here.
-			fill_right = chr(ord(action_part) - 3 - 4*(action_part=='h')) in action
+			fill_right = chr(ord(action_part) - 3 - 4 * (action_part == 'h')) in action
 			if fill_left and fill_right:
 				action += action_part
 	if action == '':

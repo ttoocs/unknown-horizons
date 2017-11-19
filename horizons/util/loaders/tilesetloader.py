@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -21,6 +21,7 @@
 
 import logging
 import os
+from typing import Dict, List
 
 import horizons.globals
 from horizons.constants import PATHS
@@ -28,7 +29,7 @@ from horizons.util.loaders.jsondecoder import JsonDecoder
 from horizons.util.loaders.loader import GeneralLoader
 
 
-class TileSetLoader(object):
+class TileSetLoader:
 	"""The TileSetLoader loads tile sets from a directory tree. The directories loaded
 	begin with 'ts_' to tell tell the loader that they are an action set. directory
 	structure is as follows: <tile_set>/<rotation>/<framenumber>.png
@@ -56,7 +57,6 @@ class TileSetLoader(object):
 
 	@classmethod
 	def load(cls):
-		#print "called"
 		if not cls._loaded:
 			cls.log.debug("Loading tile_sets...")
 			if not horizons.globals.fife.use_atlases:

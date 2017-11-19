@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 
@@ -36,7 +36,7 @@ class CommandableComponent(Component):
 	NAME = 'commandable'
 
 	def __init__(self):
-		super(CommandableComponent, self).__init__()
+		super().__init__()
 
 	def go(self, x, y):
 		"""Moves the unit.

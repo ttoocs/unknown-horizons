@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -34,7 +34,7 @@ class EditorSession(Session):
 
 	def __init__(self, *args, **kwargs):
 		kwargs['ingame_gui_class'] = IngameGui
-		super(EditorSession, self).__init__(*args, **kwargs)
+		super().__init__(*args, **kwargs)
 		self.world_editor = None
 
 	def create_manager(self):
@@ -47,7 +47,7 @@ class EditorSession(Session):
 		return Timer()
 
 	def load(self, *args, **kwargs):
-		super(EditorSession, self).load(*args, **kwargs)
+		super().load(*args, **kwargs)
 		self.world_editor = WorldEditor(self.world)
 		self.ingame_gui.setup()
 		# editor "games" start right away
@@ -68,7 +68,7 @@ class EditorSession(Session):
 			self.ingame_gui.message_widget.add('QUICKSAVE')
 		else:
 			headline = T("Failed to quicksave.")
-			descr = T("An error happened during quicksave.") + u"\n" + T("Your map has not been saved.")
+			descr = T("An error happened during quicksave.") + "\n" + T("Your map has not been saved.")
 			advice = T("If this error happens again, please contact the development team: "
 				   "{website}").format(website="http://unknown-horizons.org/support/")
 			self.ingame_gui.open_error_popup(headline, descr, advice)

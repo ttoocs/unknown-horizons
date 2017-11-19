@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -22,7 +22,8 @@
 import logging
 from collections import defaultdict
 
-from fife.extensions.pychan.widgets import Icon, HBox
+from fife import fife
+from fife.extensions.pychan.widgets import Icon
 
 from horizons.command.unit import SetStance
 from horizons.component.healthcomponent import HealthComponent
@@ -69,7 +70,7 @@ class SelectMultiTab(TabInterface):
 
 		self._scheduled_refresh = False
 
-		super(SelectMultiTab, self).__init__()
+		super().__init__()
 
 	def init_widget(self):
 		if self.stance_unit_number > 0:
@@ -184,7 +185,7 @@ class SelectMultiTab(TabInterface):
 		self.widget.findChild(name=stance.NAME).set_active()
 
 
-class UnitEntry(object):
+class UnitEntry:
 	def __init__(self, instances, show_number=True):
 		self.log = logging.getLogger("gui.tabs")
 		self.instances = instances
@@ -193,15 +194,15 @@ class UnitEntry(object):
 		i = instances[0]
 		if i.id < UNITS.DIFFERENCE_BUILDING_UNIT_ID:
 			# A building. Generate dynamic thumbnail from its action set.
-			imgs = ActionSetLoader.get_set(i._action_set_id).items()[0][1]
-			thumbnail = imgs[45].keys()[0]
+			imgs = list(ActionSetLoader.get_set(i._action_set_id).items())[0][1]
+			thumbnail = list(imgs[45].keys())[0]
 		else:
 			# Units use manually created thumbnails because those need to be
 			# precise and recognizable in combat situations.
 			thumbnail = self.get_unit_thumbnail(i.id)
 		self.widget.findChild(name="unit_button").up_image = thumbnail
 		if show_number:
-			self.widget.findChild(name="instance_number").text = unicode(len(self.instances))
+			self.widget.findChild(name="instance_number").text = str(len(self.instances))
 		# only two callbacks are needed so drop unwanted changelistener inheritance
 		for i in instances:
 			if not i.has_remove_listener(Callback(self.on_instance_removed, i)):
@@ -217,7 +218,7 @@ class UnitEntry(object):
 		path = template.format(unit_id=unit_id)
 		try:
 			Icon(image=path)
-		except RuntimeError:
+		except fife.NotFound:
 			self.log.warning('Missing unit thumbnail {0}'.format(path))
 			path = template.format(unit_id='unknown_unit')
 		return path
@@ -230,7 +231,7 @@ class UnitEntry(object):
 			health_component.remove_damage_dealt_listener(self.draw_health)
 
 		if self.instances:
-			self.widget.findChild(name="instance_number").text = unicode(len(self.instances))
+			self.widget.findChild(name="instance_number").text = str(len(self.instances))
 
 	def draw_health(self, caller=None):
 		health = 0

@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -43,5 +43,6 @@ class PlaySound(Command):
 			AmbientSoundComponent.play_special(self.sound)
 		else:
 			AmbientSoundComponent.play_special(self.sound, Point(self.position[0], self.position[1]))
+
 
 Command.allow_network(PlaySound)

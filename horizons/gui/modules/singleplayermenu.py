@@ -1,6 +1,5 @@
-# Encoding: utf-8
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -20,7 +19,6 @@
 # 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ###################################################
 
-from __future__ import print_function
 
 import json
 import locale
@@ -30,11 +28,11 @@ import re
 import subprocess
 import sys
 import tempfile
+from typing import List, Optional, Tuple
 
 import horizons.globals
 import horizons.main
 from horizons.constants import LANGUAGENAMES, PATHS, VERSION
-from horizons.ext.typing import Optional, Tuple
 from horizons.extscheduler import ExtScheduler
 from horizons.gui.util import load_uh_widget
 from horizons.gui.widgets.minimap import Minimap, iter_minimap_points
@@ -55,7 +53,7 @@ from .playerdataselection import PlayerDataSelection
 class SingleplayerMenu(Window):
 
 	def __init__(self, windows):
-		super(SingleplayerMenu, self).__init__(windows)
+		super().__init__(windows)
 
 		self._mode = None
 
@@ -121,7 +119,7 @@ class SingleplayerMenu(Window):
 		self._mode.act(player_name, player_color)
 
 
-class GameSettingsWidget(object):
+class GameSettingsWidget:
 	"""Toggle trader/pirates/disasters and change resource density."""
 
 	def __init__(self):
@@ -149,13 +147,13 @@ class GameSettingsWidget(object):
 
 			self._gui.findChild(name=setting).capture(Callback(on_box_toggle, setting, setting_save_name))
 			self._gui.findChild(name=setting).marked = horizons.globals.fife.get_uh_setting(setting_save_name)
-			self._gui.findChild(name=u'lbl_' + setting).capture(Callback(toggle, setting, setting_save_name))
+			self._gui.findChild(name='lbl_' + setting).capture(Callback(toggle, setting, setting_save_name))
 
 		resource_density_slider = self._gui.findChild(name='resource_density_slider')
 
 		def on_resource_density_slider_change():
-			self._gui.findChild(name='resource_density_lbl').text = T('Resource density:') + u' ' + \
-				unicode(resource_density_slider.value) + u'x'
+			self._gui.findChild(name='resource_density_lbl').text = T('Resource density:') + ' ' + \
+				str(resource_density_slider.value) + 'x'
 			horizons.globals.fife.set_uh_setting("MapResourceDensity", resource_density_slider.value)
 			horizons.globals.fife.save_settings()
 
@@ -181,7 +179,7 @@ class GameSettingsWidget(object):
 		return self._gui.findChild(name='disasters').marked
 
 
-class RandomMapWidget(object):
+class RandomMapWidget:
 	"""Create a random map, influence map generation with multiple sliders."""
 
 	def __init__(self, windows, singleplayer_menu, aidata):
@@ -236,18 +234,18 @@ class RandomMapWidget(object):
 		)
 
 		for param, __, setting_name in parameters:
-			self._map_parameters[param] = horizons.globals.fife.get_uh_setting(setting_name)
+			self._map_parameters[param] = int(horizons.globals.fife.get_uh_setting(setting_name))
 
 		def make_on_change(param, text, setting_name):
 			# When a slider is changed, update the value displayed in the label, save the value
 			# in the settings and store the value in self._map_parameters
 			def on_change():
 				slider = self._gui.findChild(name=param + '_slider')
-				self._gui.findChild(name=param + '_lbl').text = text + u' ' + unicode(int(slider.value))
+				self._gui.findChild(name=param + '_lbl').text = text + ' ' + str(int(slider.value))
 				horizons.globals.fife.set_uh_setting(setting_name, slider.value)
 				horizons.globals.fife.save_settings()
-				self._on_random_parameter_changed()
 				self._map_parameters[param] = int(slider.value)
+				self._on_random_parameter_changed()
 			return on_change
 
 		for param, text, setting_name in parameters:
@@ -305,7 +303,7 @@ class RandomMapWidget(object):
 		handle, self._preview_output = tempfile.mkstemp()
 		os.close(handle)
 		self._preview_process = subprocess.Popen(args=args, stdout=open(self._preview_output, "w"))
-		self._set_map_preview_status(u"Generating preview…")
+		self._set_map_preview_status("Generating preview…")
 
 		ExtScheduler().add_new_object(self._poll_preview_process, self, 0.5)
 
@@ -325,7 +323,7 @@ class RandomMapWidget(object):
 			return
 		elif self._preview_process.returncode != 0:
 			self._preview_process = None
-			self._set_map_preview_status(u"An unknown error occurred while generating the map preview")
+			self._set_map_preview_status("An unknown error occurred while generating the map preview")
 			return
 
 		with open(self._preview_output, 'r') as f:
@@ -356,13 +354,13 @@ class RandomMapWidget(object):
 			preview=True)
 
 		self._map_preview.draw_data(data)
-		self._set_map_preview_status(u"")
+		self._set_map_preview_status("")
 
 	def _set_map_preview_status(self, text):
 		self._gui.findChild(name="map_preview_status_label").text = text
 
 
-class FreeMapsWidget(object):
+class FreeMapsWidget:
 	"""Start a game by selecting an existing map."""
 
 	def __init__(self, windows, singleplayer_menu, aidata):
@@ -444,7 +442,7 @@ class FreeMapsWidget(object):
 		self._map_preview.draw()
 
 
-class ScenarioMapWidget(object):
+class ScenarioMapWidget:
 	"""Start a scenario (with a specific language)."""
 
 	def __init__(self, windows, singleplayer_menu, aidata):
@@ -479,7 +477,7 @@ class ScenarioMapWidget(object):
 		self._scenarios = SavegameManager.get_available_scenarios()
 
 		# get the map files and their display names. display tutorials on top.
-		self.maps_display = self._scenarios.keys()
+		self.maps_display = list(self._scenarios.keys())
 		if not self.maps_display:
 			return
 
@@ -499,11 +497,11 @@ class ScenarioMapWidget(object):
 
 		@param exception: Something that str() will convert to an error message
 		"""
-		logging.getLogger('gui.windows').error(u"Error: %s", exception)
+		logging.getLogger('gui.windows').error("Error: %s", exception)
 		self._windows.open_error_popup(
 			T("Invalid scenario file"),
 			description=T("The selected file is not a valid scenario file."),
-			details=T("Error message:") + u' ' + unicode(str(exception)),
+			details=T("Error message:") + ' ' + str(str(exception)),
 			advice=T("Please report this to the author."))
 
 	def _on_map_change(self):
@@ -543,7 +541,8 @@ class ScenarioMapWidget(object):
 		lang_list.items = available_languages
 		lang_list.selected = available_languages.index(selected_language)
 
-		translated_scenario = self.find_map_filename(scenario, selected_language)
+		selected_language_code = LANGUAGENAMES.get_by_value(selected_language)
+		translated_scenario = self.find_map_filename(scenario, selected_language_code)
 		if translated_scenario is None:
 			return
 
@@ -582,7 +581,7 @@ class ScenarioMapWidget(object):
 			self._show_invalid_scenario_file_popup(e)
 			return
 
-		translation_status = metadata.get('translation_status', u'')
+		translation_status = metadata.get('translation_status', '')
 		lbl = self._gui.findChild(name="translation_status")
 		lbl.text = translation_status
 
@@ -606,7 +605,7 @@ class ScenarioMapWidget(object):
 	@staticmethod
 	def get_available_languages(scenario):
 		# type: (List[Tuple[str, str]]) -> List[str]
-		scenario_langs = list(set(language for language, filename in scenario))
+		scenario_langs = {language for language, filename in scenario}
 		return [LANGUAGENAMES[l] for l in sorted(scenario_langs)]
 
 	def _get_selected_map(self):

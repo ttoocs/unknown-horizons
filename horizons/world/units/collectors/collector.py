@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -19,7 +19,6 @@
 # 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ###################################################
 
-from __future__ import print_function
 
 import logging
 import operator
@@ -76,11 +75,10 @@ class Collector(Unit):
 	              'decommissioned', # fisher ship: When home building got demolished. No more collecting.
 	              )
 
-
 	# INIT/DESTRUCT
 
 	def __init__(self, x, y, slots=1, start_hidden=True, **kwargs):
-		super(Collector, self).__init__(slots=slots,
+		super().__init__(slots=slots,
 		                                x=x, y=y,
 		                                **kwargs)
 
@@ -105,7 +103,7 @@ class Collector(Unit):
 		self._abort_collector_job()
 		self.hide()
 		self.job = None
-		super(Collector, self).remove()
+		super().remove()
 
 	def _abort_collector_job(self):
 		if self.job is None or self.state == self.states.moving_home:
@@ -121,7 +119,7 @@ class Collector(Unit):
 	# SAVE/LOAD
 
 	def save(self, db):
-		super(Collector, self).save(db)
+		super().save(db)
 
 		# save state and remaining ticks for next callback
 		# retrieve remaining ticks according current callback according to state
@@ -133,9 +131,9 @@ class Collector(Unit):
 			current_callback = self.finish_working
 		if current_callback is not None:
 			calls = Scheduler().get_classinst_calls(self, current_callback)
-			assert len(calls) == 1, 'Collector should have callback %s scheduled, but has %s' % \
-			        (current_callback, [ str(i) for i in Scheduler().get_classinst_calls(self).keys() ])
-			remaining_ticks = max(calls.values()[0], 1) # save a number > 0
+			assert len(calls) == 1, 'Collector should have callback {} scheduled, but has {}'.format(
+			        current_callback, [ str(i) for i in Scheduler().get_classinst_calls(self).keys() ])
+			remaining_ticks = max(list(calls.values())[0], 1) # save a number > 0
 
 		db("INSERT INTO collector(rowid, state, remaining_ticks, start_hidden) VALUES(?, ?, ?, ?)",
 		   self.worldid, self.state.index, remaining_ticks, self.start_hidden)
@@ -150,7 +148,7 @@ class Collector(Unit):
 				   self.worldid, obj_id, entry.res, entry.amount)
 
 	def load(self, db, worldid):
-		super(Collector, self).load(db, worldid)
+		super().load(db, worldid)
 
 		# load collector properties
 		state_id, remaining_ticks, start_hidden = \
@@ -178,10 +176,10 @@ class Collector(Unit):
 
 		# apply state when job object is loaded for sure
 		Scheduler().add_new_object(
-		  Callback.ChainedCallbacks(
-		    fix_job_object,
-		    Callback(self.apply_state, self.state, remaining_ticks)),
-		    self, run_in=0
+			Callback.ChainedCallbacks(
+				fix_job_object,
+				Callback(self.apply_state, self.state, remaining_ticks)),
+			self, run_in=0
 		)
 
 	def apply_state(self, state, remaining_ticks=None):
@@ -206,7 +204,6 @@ class Collector(Unit):
 			# job finishes in remaining_ticks ticks
 			Scheduler().add_new_object(self.finish_working, self, remaining_ticks)
 
-
 	# GETTER
 
 	def get_home_inventory(self):
@@ -226,7 +223,6 @@ class Collector(Unit):
 	def get_job(self):
 		"""Returns the next job or None"""
 		raise NotImplementedError
-
 
 	# BEHAVIOR
 	def search_job(self):
@@ -263,7 +259,6 @@ class Collector(Unit):
 
 		return True
 
-	@decorators.make_constants()
 	def check_possible_job_target_for(self, target, res):
 		"""Checks out if we could get res from target.
 		Does _not_ check for anything else (e.g. if we are able to walk there).
@@ -332,8 +327,8 @@ class Collector(Unit):
 		if job_location is None:
 			job_location = self.job.object.loading_area
 		self.move(job_location, self.begin_working,
-		          destination_in_building = self.destination_always_in_building,
-		          blocked_callback = self.handle_path_to_job_blocked, path=self.job.path)
+		          destination_in_building=self.destination_always_in_building,
+		          blocked_callback=self.handle_path_to_job_blocked, path=self.job.path)
 		self.state = self.states.moving_to_target
 
 	def resume_movement(self):
@@ -354,7 +349,7 @@ class Collector(Unit):
 		"""Pretends that the collector works by waiting some time. finish_working is
 		called after that time."""
 		self.log.debug("%s begins working", self)
-		assert self.job is not None, '%s job is None in begin_working' % self
+		assert self.job is not None, '{} job is None in begin_working'.format(self)
 		Scheduler().add_new_object(self.finish_working, self, self.work_duration)
 		# play working sound
 		if self.has_component(AmbientSoundComponent):
@@ -396,8 +391,8 @@ class Collector(Unit):
 				new_reslist.append( entry )
 
 			remnant = self.get_component(StorageComponent).inventory.alter(entry.res, actual_amount)
-			assert remnant == 0, "%s couldn't take all of res %s; remnant: %s; planned: %s" % \
-			       (self, entry.res, remnant, entry.amount)
+			assert remnant == 0, "{} couldn't take all of res {}; remnant: {}; planned: {}".format(
+			       self, entry.res, remnant, entry.amount)
 		self.job.reslist = new_reslist
 
 	def transfer_res_to_home(self, res, amount):
@@ -406,8 +401,8 @@ class Collector(Unit):
 		remnant = self.get_home_inventory().alter(res, amount)
 		#assert remnant == 0, "Home building could not take all resources from collector."
 		remnant = self.get_component(StorageComponent).inventory.alter(res, -amount)
-		assert remnant == 0, "%s couldn't give all of res %s; remnant: %s; inventory: %s" % \
-		       (self, res, remnant, self.get_component(StorageComponent).inventory)
+		assert remnant == 0, "{} couldn't give all of res {}; remnant: {}; inventory: {}".format(
+		       self, res, remnant, self.get_component(StorageComponent).inventory)
 
 	# unused reroute code removed in 2aef7bba77536da333360566467d9a2f08d38cab
 
@@ -437,7 +432,7 @@ class Collector(Unit):
 			# clean up depending on state
 			if self.state == self.states.working:
 				removed_calls = Scheduler().rem_call(self, self.finish_working)
-				assert removed_calls == 1, 'removed %s calls instead of one' % removed_calls
+				assert removed_calls == 1, 'removed {} calls instead of one'.format(removed_calls)
 			self.job = None
 			self.state = self.states.idle
 		# NOTE:
@@ -451,14 +446,15 @@ class Collector(Unit):
 
 	def __str__(self):
 		try:
-			return super(Collector, self).__str__() + "(state=%s)" % self.state
+			return super().__str__() + "(state={})".format(self.state)
 		except AttributeError: # state has not been set
-			return super(Collector, self).__str__()
+			return super().__str__()
 
 
-class Job(object):
+class Job:
 	"""Data structure for storing information of collector jobs"""
 	ResListEntry = namedtuple("ResListEntry", ["res", "amount", "target_inventory_full"])
+
 	def __init__(self, obj, reslist):
 		"""
 		@param obj: ResourceHandler that provides res
@@ -494,7 +490,7 @@ class Job(object):
 		return sum(1 for entry in self.reslist if entry.target_inventory_full)
 
 	def __str__(self):
-		return "Job(%s, %s)" % (self.object, self.reslist)
+		return "Job({}, {})".format(self.object, self.reslist)
 
 
 class JobList(list):
@@ -508,7 +504,7 @@ class JobList(list):
 		@param collector: collector instance
 		@param job_order: instance of order_by-Enum
 		"""
-		super(JobList, self).__init__()
+		super().__init__()
 		self.collector = collector
 		# choose actual function by name of enum value
 		sort_fun_name = '_sort_jobs_' + str(job_order)
@@ -565,7 +561,4 @@ class JobList(list):
 		self.sort(key=operator.attrgetter('target_inventory_full_num'), reverse=True)
 
 	def __str__(self):
-		return unicode([ unicode(i) for i in self ])
-
-
-decorators.bind_all(Collector)
+		return str([ str(i) for i in self ])

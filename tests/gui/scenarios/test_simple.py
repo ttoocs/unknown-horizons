@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -24,8 +24,8 @@ from tests.gui import gui_test
 from tests.gui.helper import get_player_ship, move_ship
 from tests.gui.scenarios.helper import assert_defeat, assert_goal_reached, assert_win
 
-
 # Example tests
+
 
 @gui_test(use_scenario='tests/gui/scenarios/win', timeout=20)
 def test_win(gui):

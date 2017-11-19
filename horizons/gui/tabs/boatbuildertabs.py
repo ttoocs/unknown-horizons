@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -21,13 +21,14 @@
 
 import math
 from operator import itemgetter
+from typing import List, Tuple
 
+from fife import fife
 from fife.extensions.pychan.widgets import Container, HBox, Icon, Label
 
 from horizons.command.production import AddProduction, CancelCurrentProduction, RemoveFromQueue
 from horizons.constants import GAME_SPEED, PRODUCTIONLINES, RES, UNITS
 from horizons.engine import Fife
-from horizons.ext.typing import Tuple
 from horizons.gui.util import create_resource_icon
 from horizons.gui.widgets.imagebutton import CancelButton, OkButton
 from horizons.i18n import gettext as T, gettext_lazy as LazyT
@@ -46,20 +47,21 @@ class ProducerOverviewTabBase(OverviewTab):
 		"""The current instance's Producer compontent."""
 		return self.instance.get_component(Producer)
 
+
 class UnitbuilderTabBase(ProducerOverviewTabBase):
 	"""Tab Baseclass that can be used by unit builders."""
 
 	def show(self):
-		super(UnitbuilderTabBase, self).show()
+		super().show()
 		Scheduler().add_new_object(Callback(self.refresh), self, run_in=GAME_SPEED.TICKS_PER_SECOND, loops=-1)
 
 	def hide(self):
-		super(UnitbuilderTabBase, self).hide()
+		super().hide()
 		Scheduler().rem_all_classinst_calls(self)
 
 	def refresh(self):
 		"""This function is called by the TabWidget to redraw the widget."""
-		super(UnitbuilderTabBase, self).refresh()
+		super().refresh()
 
 		main_container = self.widget.findChild(name="UB_main_tab")
 		container_active = main_container.findChild(name="container_active")
@@ -83,7 +85,7 @@ class UnitbuilderTabBase(ProducerOverviewTabBase):
 		if (Fife.getVersion() >= (0, 4, 0)):
 			container_inactive.parent.hideChild(container_inactive)
 		else:
-			if not container_inactive in container_inactive.parent.hidden_children:
+			if container_inactive not in container_inactive.parent.hidden_children:
 				container_inactive.parent.hideChild(container_inactive)
 
 		self.update_production_is_active_container(progress_container, container_active, cancel_container, production_lines)
@@ -99,7 +101,7 @@ class UnitbuilderTabBase(ProducerOverviewTabBase):
 
 		# Set built unit info
 		production_line = self.producer._get_production(production_lines[0])
-		produced_unit_id = production_line.get_produced_units().keys()[0]
+		produced_unit_id = list(production_line.get_produced_units().keys())[0]
 
 		name = self.instance.session.db.get_unit_type_name(produced_unit_id)
 		container_active.findChild(name="headline_UB_builtunit_label").text = T(name)
@@ -116,7 +118,7 @@ class UnitbuilderTabBase(ProducerOverviewTabBase):
 			if (Fife.getVersion() >= (0, 4, 0)):
 				w.parent.hideChild(w)
 			else:
-				if not w in w.parent.hidden_children:
+				if w not in w.parent.hidden_children:
 					w.parent.hideChild(w)
 
 	def update_buttons(self, container_active, cancel_container):
@@ -130,7 +132,7 @@ class UnitbuilderTabBase(ProducerOverviewTabBase):
 		if (Fife.getVersion() >= (0, 4, 0)):
 			button_active.parent.hideChild(button_active)
 		else:
-			if not button_active in button_active.parent.hidden_children:
+			if button_active not in button_active.parent.hidden_children:
 				button_active.parent.hideChild(button_active)
 		button_inactive.parent.showChild(button_inactive)
 
@@ -157,20 +159,16 @@ class UnitbuilderTabBase(ProducerOverviewTabBase):
 			image = self.__class__.UNIT_THUMBNAIL.format(type_id=unit_type)
 			helptext = T("{ship} (place in queue: {place})").format(
 		            ship=self.instance.session.db.get_unit_type_name(unit_type),
-		            place=place_in_queue+1)
+		            place=place_in_queue + 1)
 			# people don't count properly, always starting at 1..
-			icon_name = "queue_elem_"+str(place_in_queue)
+			icon_name = "queue_elem_" + str(place_in_queue)
 
 			try:
 				icon = Icon(name=icon_name, image=image, helptext=helptext)
-			except RuntimeError,e:
+			except fife.NotFound as e:
 				# It's possible that this error was raised from a missing thumbnail asset,
 				# so we check against that now and use a fallback thumbnail instead
-
-				# TODO string matching for runtime errors is nightmare fuel
-				# Better: Replace RuntimeError in fife with a more precise error class if possible
-				# and only catch that class here
-				if e.message.startswith('_[NotFound]_ , Something was searched, but not found :: content/gui/icons/thumbnails/'):
+				if 'content/gui/icons/thumbnails/' in e.what():
 					# actually load the fallback unit image
 					image = self.__class__.UNIT_THUMBNAIL.format(type_id="unknown_unit")
 					icon = Icon(name=icon_name, image=image, helptext=helptext)
@@ -180,22 +178,22 @@ class UnitbuilderTabBase(ProducerOverviewTabBase):
 			rm_from_queue_cb = Callback(RemoveFromQueue(self.producer, place_in_queue).execute,
 		                                self.instance.session)
 			icon.capture(rm_from_queue_cb, event_name="mouseClicked")
-			queue_container.addChild( icon )
+			queue_container.addChild(icon)
 
 	def update_needed_resources(self, needed_res_container):
 		""" Update needed resources """
 		production = self.producer.get_productions()[0]
 		needed_res = production.get_consumed_resources()
 		# Now sort! -amount is the positive value, drop unnecessary res (amount 0)
-		needed_res = dict((res, -amount) for res, amount in needed_res.iteritems() if amount < 0)
-		needed_res = sorted(needed_res.iteritems(), key=itemgetter(1), reverse=True)
+		needed_res = {res: -amount for res, amount in needed_res.items() if amount < 0}
+		needed_res = sorted(needed_res.items(), key=itemgetter(1), reverse=True)
 		needed_res_container.removeAllChildren()
 		for i, (res, amount) in enumerate(needed_res):
 			icon = create_resource_icon(res, self.instance.session.db)
 			icon.max_size = icon.min_size = icon.size = (16, 16)
-			label = Label(name="needed_res_lbl_%s" % i)
-			label.text = u'{amount}t'.format(amount=amount)
-			new_hbox = HBox(name="needed_res_box_%s" % i)
+			label = Label(name="needed_res_lbl_{}".format(i))
+			label.text = '{amount}t'.format(amount=amount)
+			new_hbox = HBox(name="needed_res_box_{}".format(i))
 			new_hbox.addChildren(icon, label)
 			needed_res_container.addChild(new_hbox)
 
@@ -205,7 +203,8 @@ class UnitbuilderTabBase(ProducerOverviewTabBase):
 		progress = math.floor(self.producer.get_production_progress() * 100)
 		self.widget.findChild(name='progress').progress = progress
 		progress_perc = self.widget.findChild(name='UB_progress_perc')
-		progress_perc.text = u'{progress}%'.format(progress=progress)
+		progress_perc.text = '{progress}%'.format(progress=progress)
+
 
 class BoatbuilderTab(UnitbuilderTabBase):
 	widget = 'boatbuilder.xml'
@@ -223,11 +222,12 @@ class BoatbuilderTab(UnitbuilderTabBase):
 # * pause production (keep order and "running" running costs [...] but collect no new resources)
 # * abort building process: delete task, remove all resources, display [start view] again
 
+
 class BoatbuilderSelectTab(ProducerOverviewTabBase):
 	widget = 'boatbuilder_showcase.xml'
 
 	def init_widget(self):
-		super(BoatbuilderSelectTab, self).init_widget()
+		super().init_widget()
 		self.widget.findChild(name='headline').text = self.helptext
 
 		showcases = self.widget.findChild(name='showcases')
@@ -237,14 +237,14 @@ class BoatbuilderSelectTab(ProducerOverviewTabBase):
 
 	def build_ship_info(self, index, ship, prodline):
 		size = (260, 90)
-		widget = Container(name='showcase_%s' % index, position=(0, 20 + index*90),
+		widget = Container(name='showcase_{}'.format(index), position=(0, 20 + index * 90),
 		                   min_size=size, max_size=size, size=size)
-		bg_icon = Icon(image='content/gui/images/background/square_80.png', name='bg_%s'%index)
+		bg_icon = Icon(image='content/gui/images/background/square_80.png', name='bg_{}'.format(index))
 		widget.addChild(bg_icon)
 
 		image = 'content/gui/images/objects/ships/76/{unit_id}.png'.format(unit_id=ship)
 		helptext = self.instance.session.db.get_unit_tooltip(ship)
-		unit_icon = Icon(image=image, name='icon_%s'%index, position=(2, 2),
+		unit_icon = Icon(image=image, name='icon_{}'.format(index), position=(2, 2),
 		                 helptext=helptext)
 		widget.addChild(unit_icon)
 
@@ -252,10 +252,10 @@ class BoatbuilderSelectTab(ProducerOverviewTabBase):
 		#ship_unbuildable = self.is_ship_unbuildable(ship)
 		ship_unbuildable = False
 		if not ship_unbuildable:
-			button = OkButton(position=(60, 50), name='ok_%s'%index, helptext=T('Build this ship!'))
+			button = OkButton(position=(60, 50), name='ok_{}'.format(index), helptext=T('Build this ship!'))
 			button.capture(Callback(self.start_production, prodline))
 		else:
-			button = CancelButton(position=(60, 50), name='ok_%s'%index,
+			button = CancelButton(position=(60, 50), name='ok_{}'.format(index),
 			helptext=ship_unbuildable)
 
 		widget.addChild(button)
@@ -263,18 +263,18 @@ class BoatbuilderSelectTab(ProducerOverviewTabBase):
 		# Get production line info
 		production = self.producer.create_production_line(prodline)
 		# consumed == negative, reverse to sort in *ascending* order:
-		costs = sorted(production.consumed_res.iteritems(), key=itemgetter(1))
+		costs = sorted(production.consumed_res.items(), key=itemgetter(1))
 		for i, (res, amount) in enumerate(costs):
 			xoffset = 103 + (i  % 2) * 55
 			yoffset =  20 + (i // 2) * 20
 			icon = create_resource_icon(res, self.instance.session.db)
 			icon.max_size = icon.min_size = icon.size = (16, 16)
 			icon.position = (xoffset, yoffset)
-			label = Label(name='cost_%s_%s' % (index, i))
+			label = Label(name='cost_{}_{}'.format(index, i))
 			if res == RES.GOLD:
-				label.text = unicode(-amount)
+				label.text = str(-amount)
 			else:
-				label.text = u'{amount:02}t'.format(amount=-amount)
+				label.text = '{amount:02}t'.format(amount=-amount)
 			label.position = (22 + xoffset, yoffset)
 			widget.addChild(icon)
 			widget.addChild(label)
@@ -345,8 +345,8 @@ class BoatbuilderConfirmTab(ProducerOverviewTabBase):
 	helptext = LazyT("Confirm order")
 
 	def init_widget(self):
-		super(BoatbuilderConfirmTab, self).init_widget()
-		events = { 'create_unit': self.start_production }
+		super().init_widget()
+		events = {'create_unit': self.start_production}
 		self.widget.mapEvents(events)
 
 	def start_production(self):

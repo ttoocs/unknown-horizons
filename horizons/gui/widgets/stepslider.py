@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -34,13 +34,13 @@ class StepSlider(Slider):
 	def __init__(self, *args, **kwargs):
 		self._callbacks_by_group = {} # super init calls capture, so we need this here
 
-		super(StepSlider, self).__init__(*args, **kwargs)
+		super().__init__(*args, **kwargs)
 
 		self._last_step_value = None # for recognizing new steps, self.value is overwritten in the base class sometimes
 		self._steps = None
 
-		super(StepSlider, self).capture(self._update, 'action', 'stepslider')
-		super(StepSlider, self).capture(self._mouse_released_snap, 'mouseReleased', 'stepslider')
+		super().capture(self._update, 'action', 'stepslider')
+		super().capture(self._mouse_released_snap, 'mouseReleased', 'stepslider')
 
 	def _mouse_released_snap(self):
 		"""
@@ -59,7 +59,7 @@ class StepSlider(Slider):
 		if event_name == 'action':
 			self._callbacks_by_group[group_name] = callback
 		else:
-			super(StepSlider, self).capture(callback, event_name, group_name)
+			super().capture(callback, event_name, group_name)
 
 	def _update(self):
 		"""
@@ -67,11 +67,11 @@ class StepSlider(Slider):
 		"""
 		if self.value != self._last_step_value:
 			self._last_step_value = self.value
-			for callback in self._callbacks_by_group.itervalues():
+			for callback in self._callbacks_by_group.values():
 				callback()
 
 	def _set_steps(self, steps):
-		if isinstance(steps, basestring):
+		if isinstance(steps, str):
 			self._steps = [float(s.strip()) for s in steps.split(';')]
 		else:
 			self._steps = steps

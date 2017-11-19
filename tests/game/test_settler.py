@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -50,6 +50,7 @@ def test_settler_level(s, p):
 
 	# should have leveled up
 	assert settler.level == level + 1
+
 
 @game_test()
 def test_deny_upgrade_permissions_special(s, p):

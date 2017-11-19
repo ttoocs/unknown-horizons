@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -27,10 +27,10 @@ from horizons.util.color import Color
 from horizons.util.difficultysettings import DifficultySettings
 
 
-class StartGameOptions(object):
+class StartGameOptions:
 
 	def __init__(self, game_identifier):
-		super(StartGameOptions, self).__init__()
+		super().__init__() # TODO: check if this call is needed
 		self.game_identifier = game_identifier
 		self._player_list = None
 
@@ -85,7 +85,7 @@ class StartGameOptions(object):
 		cur_locale = horizons.globals.fife.get_locale()
 
 		# add AI players with a distinct color; if none can be found then use black
-		for num in xrange(self.ai_players):
+		for num in range(self.ai_players):
 			color = Color.get(COLORS.BLACK) # if none can be found then be black
 			for possible_color in Color.get_defaults():
 				if possible_color == Color.get(COLORS.BLACK):

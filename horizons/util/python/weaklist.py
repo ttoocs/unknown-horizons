@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -36,14 +36,15 @@ class _CopyDocFromParentClass(type):
     """
 
 	def __init__(cls, name, bases, dict):
-		for name, method in dict.iteritems():
+		for name, method in dict.items():
 			try:
 				if not method.__doc__:
 					method.__doc__ = getattr(bases[0], name).__doc__
 			except AttributeError:
 				pass
 
-class WeakList(list):
+
+class WeakList(list, metaclass=_CopyDocFromParentClass):
 	"""
     A Weak_list can store objects but without keeping them
     alive with references couting incrementation.
@@ -75,11 +76,6 @@ class WeakList(list):
 
     """
 
-	# This copy all the list's doctstring into this class's method
-	# So even if the class look undocumented, it is ! (use pydoc)
-	__metaclass__ = _CopyDocFromParentClass
-
-
 	## Basic custom
 
 	def __init__(self, items=None):
@@ -93,7 +89,6 @@ class WeakList(list):
 
 	def __repr__(self):
 		return 'Weak_list((' + ', '.join((repr(i) for i in self)) + '))'
-
 
 	## Special method
 
@@ -112,7 +107,6 @@ class WeakList(list):
         """
 
 		list.remove(self, ref)
-
 
 	## list method
 
@@ -144,7 +138,6 @@ class WeakList(list):
 	def insert(self, index, obj):
 		list.insert(self, index, self.__new_weakref(obj))
 
-
 	## Emulating container types
 
 	def __getitem__(self, index):
@@ -172,7 +165,6 @@ class WeakList(list):
 	def __reversed__(self):
 		return iter([i() for i in list.__reversed__(self)])
 
-
 	## Emulating numeric types
 
 	def __iadd__(self, other):
@@ -181,7 +173,6 @@ class WeakList(list):
 
 	def __add__(self, other):
 		return self.__class__(list(self) + list(other))
-
 
 	## Rich comparison
 

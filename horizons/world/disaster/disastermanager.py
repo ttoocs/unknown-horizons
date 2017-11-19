@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -29,7 +28,7 @@ from horizons.world.disaster.blackdeathdisaster import BlackDeathDisaster
 from horizons.world.disaster.firedisaster import FireDisaster
 
 
-class DisasterManager(object):
+class DisasterManager:
 	"""The disaster manager manages disasters. It seeds them into the
 	game world and makes all requirements for a disaster are met before
 	seeding it."""
@@ -58,7 +57,7 @@ class DisasterManager(object):
 	def save(self, db):
 		ticks = Scheduler().get_remaining_ticks(self, self.run, True)
 		db("INSERT INTO disaster_manager(remaining_ticks) VALUES(?)", ticks)
-		for disaster in self._active_disaster.itervalues():
+		for disaster in self._active_disaster.values():
 			disaster.save(db)
 
 	def load(self, db):
@@ -71,7 +70,7 @@ class DisasterManager(object):
 
 		for disaster_id, disaster_type, settlement_id in db("SELECT rowid, type, settlement FROM disaster"):
 			settlement = WorldObject.get_object_by_id(settlement_id)
-			klass = (i for i in  self.disasters if i.TYPE == disaster_type).next()
+			klass = next((i for i in  self.disasters if i.TYPE == disaster_type))
 			cata = klass(settlement, self)
 			self._active_disaster[settlement] = cata
 			cata.load(db, disaster_id)
@@ -81,7 +80,7 @@ class DisasterManager(object):
 			return
 		for settlement in self.session.world.settlements:
 			for disaster in self.disasters:
-				if not settlement in self._active_disaster:
+				if settlement not in self._active_disaster:
 					if self.session.random.random() <= disaster.SEED_CHANCE:
 						if disaster.can_breakout(settlement):
 							self.log.debug("Seeding disaster: %s", disaster)

@@ -1,6 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
+
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -32,18 +33,18 @@ if len(sys.argv) < 2:
 
 filename = sys.argv[1]
 
-file = open(filename, "r")
+readfile = open(filename, "r")
 
 i = 0
 translations = {}
 
 state = 0
 
-for line in file:
+for line in readfile:
 	line = line.strip()
 
 	if state == 0:
-		if not "msgid" in line:
+		if "msgid" not in line:
 			continue
 		translations[i] = {}
 		translations[i][0] = line
@@ -79,10 +80,10 @@ for t in translations:
 	if trans == "\"\"":
 		continue
 
-	len_ratio = float(len(orig))/len(trans)
+	len_ratio = float(len(orig)) / len(trans)
 
 	if len_ratio > 1.4 or len_ratio < 0.6 and \
-			abs(len(orig)-len(trans)) > 2:
+			abs(len(orig) - len(trans)) > 2:
 		print('string length ratio:', len_ratio)
 		print(orig)
 		print(trans)

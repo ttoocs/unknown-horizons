@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -25,7 +25,6 @@ from horizons.ai.aiplayer.buildingevaluator import BuildingEvaluator
 from horizons.ai.aiplayer.constants import BUILDING_PURPOSE
 from horizons.constants import BUILDINGS
 from horizons.entities import Entities
-from horizons.util.python import decorators
 
 
 class AbstractWeaver(AbstractBuilding):
@@ -36,6 +35,7 @@ class AbstractWeaver(AbstractBuilding):
 	@classmethod
 	def register_buildings(cls):
 		cls._available_buildings[BUILDINGS.WEAVER] = cls
+
 
 class WeaverEvaluator(BuildingEvaluator):
 	@classmethod
@@ -69,7 +69,5 @@ class WeaverEvaluator(BuildingEvaluator):
 	def purpose(self):
 		return BUILDING_PURPOSE.WEAVER
 
-AbstractWeaver.register_buildings()
 
-decorators.bind_all(AbstractWeaver)
-decorators.bind_all(WeaverEvaluator)
+AbstractWeaver.register_buildings()

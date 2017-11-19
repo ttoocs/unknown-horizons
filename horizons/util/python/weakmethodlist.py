@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -29,7 +29,7 @@ class WeakMethodList(list):
 		"""
 		@param callbacks: None, a function, a list of functions, or a tuple of functions
 		"""
-		super(WeakMethodList, self).__init__()
+		super().__init__()
 		self.append(callbacks)
 
 	def append(self, callback):

@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -26,7 +26,6 @@ from horizons.ai.aiplayer.constants import BUILDING_PURPOSE
 from horizons.component.storagecomponent import StorageComponent
 from horizons.constants import BUILDINGS, RES
 from horizons.entities import Entities
-from horizons.util.python import decorators
 
 
 class AbstractStonePit(AbstractBuilding):
@@ -46,6 +45,7 @@ class AbstractStonePit(AbstractBuilding):
 	def register_buildings(cls):
 		cls._available_buildings[BUILDINGS.STONE_PIT] = cls
 
+
 class StonePitEvaluator(BuildingEvaluator):
 	@classmethod
 	def create(cls, area_builder, x, y, orientation):
@@ -58,7 +58,5 @@ class StonePitEvaluator(BuildingEvaluator):
 	def purpose(self):
 		return BUILDING_PURPOSE.STONE_PIT
 
-AbstractStonePit.register_buildings()
 
-decorators.bind_all(AbstractStonePit)
-decorators.bind_all(StonePitEvaluator)
+AbstractStonePit.register_buildings()

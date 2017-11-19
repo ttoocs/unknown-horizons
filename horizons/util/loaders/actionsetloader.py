@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -21,6 +21,7 @@
 
 import logging
 import os
+from typing import Dict
 
 import horizons.globals
 from horizons.constants import PATHS
@@ -28,7 +29,7 @@ from horizons.util.loaders.jsondecoder import JsonDecoder
 from horizons.util.loaders.loader import GeneralLoader
 
 
-class ActionSetLoader(object):
+class ActionSetLoader:
 	"""The ActionSetLoader loads action sets from a directory tree. The directories loaded
 	begin with 'as_' to tell tell the loader that they are an action set. directory
 	structure is as follows: <action_set>/<action>/<rotation>/<framenumber>.png
@@ -43,11 +44,11 @@ class ActionSetLoader(object):
 	_loaded = False
 
 	@classmethod
-	def _find_action_sets(cls, dir):
+	def _find_action_sets(cls, Dir):
 		"""Traverses recursively starting from dir to find action sets.
 		It is similar to os.walk, but more optimized for this use case."""
-		for entry in os.listdir(dir):
-			full_path = os.path.join(dir, entry)
+		for entry in os.listdir(Dir):
+			full_path = os.path.join(Dir, entry)
 			if entry.startswith("as_"):
 				cls.action_sets[entry] = GeneralLoader._load_action(full_path)
 			else:

@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -21,7 +21,6 @@
 
 from horizons.ai.aiplayer.constants import GOAL_RESULT
 from horizons.ai.aiplayer.goal.settlementgoal import SettlementGoal
-from horizons.util.python import decorators
 
 
 class FoundFeederIslandGoal(SettlementGoal):
@@ -41,12 +40,10 @@ class FoundFeederIslandGoal(SettlementGoal):
 
 	@property
 	def active(self):
-		return super(FoundFeederIslandGoal, self).active and self._need_feeder_island() and not self._have_feeder_island() and \
+		return super().active and self._need_feeder_island() and not self._have_feeder_island() and \
 			self.owner.settlement_founder.can_found_feeder_island()
 
 	def execute(self):
 		self.settlement_manager.log.info('%s waiting for a feeder islands to be founded', self)
 		self.owner.settlement_founder.found_feeder_island()
 		return GOAL_RESULT.BLOCK_SETTLEMENT_RESOURCE_USAGE
-
-decorators.bind_all(FoundFeederIslandGoal)

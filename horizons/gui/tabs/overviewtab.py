@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -34,7 +33,7 @@ class OverviewTab(TabInterface):
 
 	def __init__(self, instance, widget=None, icon_path=None):
 		self.instance = instance
-		super(OverviewTab, self).__init__(widget=widget, icon_path=icon_path)
+		super().__init__(widget=widget, icon_path=icon_path)
 
 	def init_widget(self):
 		# set player emblem
@@ -61,12 +60,12 @@ class OverviewTab(TabInterface):
 		if hasattr(self.instance, 'running_costs') and \
 		   self.widget.child_finder('running_costs'):
 			self.widget.child_finder('running_costs').text = \
-			    unicode(self.instance.running_costs)
+			    str(self.instance.running_costs)
 
 		self.widget.adaptLayout()
 
 	def show(self):
-		super(OverviewTab, self).show()
+		super().show()
 		if not self.instance.has_change_listener(self.refresh):
 			self.instance.add_change_listener(self.refresh)
 		if not self.instance.has_remove_listener(self.on_instance_removed):
@@ -78,7 +77,7 @@ class OverviewTab(TabInterface):
 			self.instance.settlement.add_change_listener(self._schedule_refresh)
 
 	def hide(self):
-		super(OverviewTab, self).hide()
+		super().hide()
 		if self.instance is not None:
 			self.instance.discard_change_listener(self.refresh)
 			self.instance.discard_remove_listener(self.on_instance_removed)
@@ -96,6 +95,7 @@ class OverviewTab(TabInterface):
 			stance_widget.init(self.instance)
 			self.add_remove_listener(stance_widget.remove)
 
+
 class GroundUnitOverviewTab(OverviewTab):
 	widget = 'overview_groundunit.xml'
 	helptext = LazyT("Unit overview")
@@ -103,13 +103,14 @@ class GroundUnitOverviewTab(OverviewTab):
 	has_stance = True
 
 	def init_widget(self):
-		super(GroundUnitOverviewTab, self).init_widget()
+		super().init_widget()
 		health_widget = self.widget.findChild(name='health')
 		health_widget.init(self.instance)
 		self.add_remove_listener(health_widget.remove)
 		weapon_storage_widget = self.widget.findChild(name='weapon_storage')
 		weapon_storage_widget.init(self.instance)
 		self.add_remove_listener(weapon_storage_widget.remove)
+
 
 #added from old groundunittabs.py
 #class GroundUnitOverviewTab(OverviewTab):
@@ -118,6 +119,7 @@ class GroundUnitOverviewTab(OverviewTab):
 #
 #	def init_widget(self):
 #		super(GroundUnitOverviewTab, self).init_widget()
+
 
 class GenericOverviewTab(OverviewTab):
 	"""Name and running costs."""

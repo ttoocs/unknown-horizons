@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -20,12 +20,12 @@
 # ###################################################
 
 import logging
+from typing import List
 
 from horizons.ai.aiplayer.personality import DefaultPersonality, OtherPersonality
-from horizons.util.python import decorators
 
 
-class PersonalityManager(object):
+class PersonalityManager:
 	"""This class handles the loading of personality data for the AI players."""
 
 	log = logging.getLogger("ai.aiplayer.personality_manager")
@@ -67,6 +67,5 @@ class PersonalityManager(object):
 		cls.available_personalities.append(DefaultPersonality)
 		cls.available_personalities.append(OtherPersonality)
 
-PersonalityManager.prepare_personalities_list()
 
-decorators.bind_all(PersonalityManager)
+PersonalityManager.prepare_personalities_list()

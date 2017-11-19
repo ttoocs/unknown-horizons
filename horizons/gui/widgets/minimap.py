@@ -1,4 +1,4 @@
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -18,11 +18,11 @@
 # 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 # ###################################################
 
-from __future__ import print_function
 
 import itertools
 import math
 from math import cos, sin
+from typing import List
 
 from fife import fife
 
@@ -31,7 +31,6 @@ from horizons.command.unit import Act
 from horizons.component.namedcomponent import NamedComponent
 from horizons.extscheduler import ExtScheduler
 from horizons.messaging import SettingChanged
-from horizons.util.python import decorators
 from horizons.util.shapes import Circle, Point, Rect
 
 
@@ -41,7 +40,7 @@ def get_world_to_minimap_ratio(world_dimensions, minimap_dimensions):
 	Returns a tuple for x and y, in case they differ.
 	Accepts two tuples of (width, height) to compute the ratio on.
 	"""
-	return tuple(float(w) / m for w, m in zip(world_dimensions, minimap_dimensions))
+	return tuple(w / m for w, m in zip(world_dimensions, minimap_dimensions))
 
 
 def iter_minimap_points(location, world, island_color, water_color, area=None):
@@ -62,8 +61,8 @@ def iter_minimap_points(location, world, island_color, water_color, area=None):
 	pixel_per_coord_x, pixel_per_coord_y = get_world_to_minimap_ratio(world_dimensions, minimap_dimensions)
 
 	# calculate values here so we don't have to do it in the loop
-	pixel_per_coord_x_half_as_int = int(pixel_per_coord_x/2)
-	pixel_per_coord_y_half_as_int = int(pixel_per_coord_y/2)
+	pixel_per_coord_x_half_as_int = int(pixel_per_coord_x / 2)
+	pixel_per_coord_y_half_as_int = int(pixel_per_coord_y / 2)
 
 	world_min_x = world.min_x
 	world_min_y = world.min_y
@@ -71,8 +70,8 @@ def iter_minimap_points(location, world, island_color, water_color, area=None):
 
 	# loop through map coordinates, assuming (0, 0) is the origin of the minimap
 	# this facilitates calculating the real world coords
-	for x in xrange(area.left - location.left, area.left + area.width - location.left):
-		for y in xrange(area.top - location.top, area.top + area.height - location.top):
+	for x in range(area.left - location.left, area.left + area.width - location.left):
+		for y in range(area.top - location.top, area.top + area.height - location.top):
 			"""
 			This code should be here, but since python can't do inlining, we have to inline
 			ourselves for performance reasons
@@ -107,7 +106,7 @@ def iter_minimap_points(location, world, island_color, water_color, area=None):
 			yield ((x, y), color)
 
 
-class Minimap(object):
+class Minimap:
 	"""A basic minimap.
 
 	USAGE:
@@ -178,6 +177,11 @@ class Minimap(object):
 			self.location = Rect.init_from_topleft_and_size(0, 0, position.width, position.height)
 			self.icon = position
 			self.use_overlay_icon(self.icon)
+
+		# FIXME PY3 width / height of icon is sometimes zero. Why?
+		if self.location.height == 0 or self.location.width == 0:
+			self.location = Rect.init_from_topleft_and_size(0, 0, 128, 128)
+
 		self.session = session
 		self.world = world
 		if self.world:
@@ -194,7 +198,7 @@ class Minimap(object):
 
 		self.location_center = self.location.center
 
-		self._id = str(self.__class__.__minimap_id_counter.next()) # internal identifier, used for allocating resources
+		self._id = str(next(self.__class__.__minimap_id_counter)) # internal identifier, used for allocating resources
 
 		self._image_size_cache = {} # internal detail
 
@@ -243,11 +247,11 @@ class Minimap(object):
 
 		if not hasattr(self, "icon"):
 			# add to global generic renderer with id specific to this instance
-			self.renderer.removeAll("minimap_image"+self._id)
+			self.renderer.removeAll("minimap_image" + self._id)
 			self.minimap_image.reset()
 			# NOTE: this is for the generic renderer interface, the offrenderer has slightly different methods
 			node = fife.RendererNode(fife.Point(self.location.center.x, self.location.center.y))
-			self.renderer.addImage("minimap_image"+self._id, node, self.minimap_image.image, False)
+			self.renderer.addImage("minimap_image" + self._id, node, self.minimap_image.image, False)
 
 		else:
 			# attach image to pychan icon (recommended)
@@ -277,7 +281,6 @@ class Minimap(object):
 		for x, y, r, g, b in data:
 			point.set(x, y)
 			draw_point(render_name, point, r, g, b)
-
 
 	def _get_render_name(self, key):
 		return self.RENDER_NAMES[key] + self._id
@@ -310,11 +313,10 @@ class Minimap(object):
 			coords = self._world_to_minimap(corner, use_rotation)
 			minimap_corners_as_point.append(fife.Point(coords[0], coords[1]))
 
-
-		for i in xrange(0, 4):
+		for i in range(0, 4):
 			self.minimap_image.rendertarget.addLine(self._get_render_name("cam"),
 			                                        minimap_corners_as_point[i],
-			                                        minimap_corners_as_point[(i+1) % 4],
+			                                        minimap_corners_as_point[(i + 1) % 4],
 			                                                         *self.COLORS["cam"])
 
 	@classmethod
@@ -335,8 +337,8 @@ class Minimap(object):
 		  minimap_point[1] + self.location.top,
 		)
 		rect = Rect.init_from_topleft_and_size(minimap_point[0], minimap_point[1],
-								                           int(round(1/world_to_minimap[0])) + 1,
-								                           int(round(1/world_to_minimap[1])) + 1)
+								                           int(round(1 / world_to_minimap[0])) + 1,
+								                           int(round(1 / world_to_minimap[1])) + 1)
 		self._recalculate(rect)
 
 	def use_overlay_icon(self, icon):
@@ -459,7 +461,7 @@ class Minimap(object):
 
 		def high(i=0):
 			i += 1
-			render_name = self._get_render_name("highlight")+str(tup)
+			render_name = self._get_render_name("highlight") + str(tup)
 			self.minimap_image.set_drawing_enabled()
 			self.minimap_image.rendertarget.removeAll(render_name)
 			if i > STEPS:
@@ -468,7 +470,7 @@ class Minimap(object):
 				return
 			part = i # grow bigger
 			if i > STEPS // 2: # after the first half
-				part = STEPS-i  # become smaller
+				part = STEPS - i  # become smaller
 
 			radius = MIN_RAD + int((float(part) / (STEPS // 2)) * (MAX_RAD - MIN_RAD))
 
@@ -479,7 +481,7 @@ class Minimap(object):
 			ExtScheduler().add_new_object(lambda : high(i), self, INTERVAL, loops=1)
 
 		high()
-		return STEPS*INTERVAL
+		return STEPS * INTERVAL
 
 	def show_unit_path(self, unit):
 		"""Show the path a unit is moving along"""
@@ -496,14 +498,14 @@ class Minimap(object):
 				break
 
 		# display units one ahead if possible, it looks nicer if the unit is moving
-		if len(path) > 1 and position_of_unit_in_path+1 < len(path):
-			position_of_unit_in_path += 1 #
+		if len(path) > 1 and position_of_unit_in_path + 1 < len(path):
+			position_of_unit_in_path += 1
 		path = path[position_of_unit_in_path:]
 
 		# draw every step-th coord
 		step = 1
 		relevant_coords = [path[0]]
-		for i in xrange(step, len(path), step):
+		for i in range(step, len(path), step):
 			relevant_coords.append(path[i])
 		relevant_coords.append(path[-1])
 
@@ -511,7 +513,7 @@ class Minimap(object):
 		use_rotation = self._get_rotation_setting()
 		self.minimap_image.set_drawing_enabled()
 		p = fife.Point(0, 0)
-		render_name = self._get_render_name("ship_route") + str(self.__class__.__ship_route_counter.next())
+		render_name = self._get_render_name("ship_route") + str(next(self.__class__.__ship_route_counter))
 		color = unit.owner.color.to_tuple()
 		last_coord = None
 		draw_point = self.minimap_image.rendertarget.addPoint
@@ -650,7 +652,7 @@ class Minimap(object):
 		if size_tuple is None:
 			ratio = sum(self._world_to_minimap_ratio) / 2.0
 			ratio = max(1.0, ratio)
-			size_tuple = int(img.getWidth()/ratio), int(img.getHeight()/ratio)
+			size_tuple = int(img.getWidth() / ratio), int(img.getHeight() / ratio)
 			self._image_size_cache[img_path] = size_tuple
 		new_width, new_height = size_tuple
 		p = self.__class__._dummy_fife_point
@@ -701,6 +703,7 @@ class Minimap(object):
 				         2 : math.pi,
 				         3 : math.pi / 2
 				         }
+
 	def _get_rotated_coords(self, tup):
 		"""Rotates according to current rotation settings.
 		Input coord must be relative to screen origin, not minimap origin"""
@@ -711,6 +714,7 @@ class Minimap(object):
 				              2 : math.pi,
 				              3 : 3 * math.pi / 2
 				              }
+
 	def _get_from_rotated_coords(self, tup):
 		return self._rotate(tup, self._from_rotations)
 
@@ -752,8 +756,8 @@ class Minimap(object):
 		@return tuple"""
 		pixel_per_coord_x, pixel_per_coord_y = self._world_to_minimap_ratio
 		return (
-			int(round(float(tup[0] - self.world.min_x)/pixel_per_coord_x))+self.location.left,
-			int(round(float(tup[1] - self.world.min_y)/pixel_per_coord_y))+self.location.top
+			int(round(float(tup[0] - self.world.min_x) / pixel_per_coord_x)) + self.location.left,
+			int(round(float(tup[1] - self.world.min_y) / pixel_per_coord_y)) + self.location.top
 		)
 
 	def _minimap_coords_to_world_coords(self, tup):
@@ -767,7 +771,7 @@ class Minimap(object):
 		return (self.location.height, self.location.width)
 
 
-class _MinimapImage(object):
+class _MinimapImage:
 	"""Encapsulates handling of fife Image.
 	Provides:
 	- self.rendertarget: instance of fife.RenderTarget
@@ -796,6 +800,3 @@ class _MinimapImage(object):
 		"""Always call this."""
 		targetname = self.rendertarget.getTarget().getName()
 		self.targetrenderer.setRenderTarget(targetname, False, 0)
-
-
-decorators.bind_all(Minimap)

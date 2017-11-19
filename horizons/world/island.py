@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -78,7 +78,7 @@ class Island(BuildingOwner, WorldObject):
 		@param session: reference to Session instance
 		@param preview: flag, map preview mode
 		"""
-		super(Island, self).__init__(worldid=island_id)
+		super().__init__(worldid=island_id)
 
 		self.session = session
 
@@ -131,7 +131,7 @@ class Island(BuildingOwner, WorldObject):
 		self.ground_map = {}
 		for (x, y, ground_id, action_id, rotation) in db("SELECT x, y, ground_id, action_id, rotation FROM ground WHERE island_id = ?", island_id - 1001): # Load grounds
 			if not preview: # actual game, need actual tiles
-				ground = Entities.grounds[str('%d-%s' % (ground_id, action_id))](self.session, x, y)
+				ground = Entities.grounds[str('{:d}-{}'.format(ground_id, action_id))](self.session, x, y)
 				ground.act(rotation)
 			else:
 				ground = MapPreviewTile(x, y, ground_id)
@@ -151,10 +151,10 @@ class Island(BuildingOwner, WorldObject):
 		self.num_trees = 0
 
 		# define the rectangle with the smallest area that contains every island tile its position
-		min_x = min(zip(*self.ground_map.keys())[0])
-		max_x = max(zip(*self.ground_map.keys())[0])
-		min_y = min(zip(*self.ground_map.keys())[1])
-		max_y = max(zip(*self.ground_map.keys())[1])
+		min_x = min(list(zip(*self.ground_map.keys()))[0])
+		max_x = max(list(zip(*self.ground_map.keys()))[0])
+		min_y = min(list(zip(*self.ground_map.keys()))[1])
+		max_y = max(list(zip(*self.ground_map.keys()))[1])
 		self.position = Rect.init_from_borders(min_x, min_y, max_x, max_y)
 
 		if not preview:
@@ -173,7 +173,7 @@ class Island(BuildingOwner, WorldObject):
 		"""
 
 	def save(self, db):
-		super(Island, self).save(db)
+		super().save(db)
 		for settlement in self.settlements:
 			settlement.save(db, self.worldid)
 		for animal in self.wild_animals:
@@ -181,7 +181,7 @@ class Island(BuildingOwner, WorldObject):
 
 	def get_coordinates(self):
 		"""Returns list of coordinates, that are on the island."""
-		return self.ground_map.keys()
+		return list(self.ground_map.keys())
 
 	def get_tile(self, point):
 		"""Returns whether a tile is on island or not.
@@ -337,7 +337,7 @@ class Island(BuildingOwner, WorldObject):
 			# it is ok to skip in that case because the cache's constructor will take the deposits into account anyway
 			self.deposits[building.id][building.position.origin.to_tuple()] = building
 			self.available_land_cache.remove_area(list(building.position.tuple_iter()))
-		super(Island, self).add_building(building, player, load=load)
+		super().add_building(building, player, load=load)
 		if not load and building.settlement is not None:
 			# Note: (In case we do not require all building tiles to lay inside settlement
 			# range at some point.) `include_self` is True in get_radius_coordinates()
@@ -376,7 +376,7 @@ class Island(BuildingOwner, WorldObject):
 			settlement.remove_building(building)
 			assert building not in settlement.buildings
 
-		super(Island, self).remove_building(building)
+		super().remove_building(building)
 		if building.id in self.building_indexers:
 			self.building_indexers[building.id].remove(building)
 
@@ -419,7 +419,7 @@ class Island(BuildingOwner, WorldObject):
 				pass
 
 	def __iter__(self):
-		return self.ground_map.iterkeys()
+		return iter(self.ground_map.keys())
 
 	def check_wild_animal_population(self):
 		"""Creates a wild animal if they died out."""
@@ -452,7 +452,7 @@ class Island(BuildingOwner, WorldObject):
 		# keep searching for new trees every time a tree is torn down.
 		for wild_animal in (wild_animal for wild_animal in self.wild_animals):
 			wild_animal.remove()
-		super(Island, self).end()
+		super().end()
 		for settlement in self.settlements:
 			settlement.end()
 		self.wild_animals = None

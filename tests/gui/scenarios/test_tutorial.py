@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -26,7 +26,7 @@ from tests.gui.scenarios.helper import (
 	assert_win, settlement_res_stored_greater, settler_level_greater, var_eq, wait_and_close_logbook)
 
 
-@gui_test(use_scenario='content/scenarios/tutorial_en', timeout=7*60)
+@gui_test(use_scenario='content/scenarios/tutorial_en', timeout=7 * 60)
 def test_tutorial(gui):
 	"""Test the tutorial scenario."""
 
@@ -128,7 +128,7 @@ def test_tutorial(gui):
 	gui.cursor_click(11, 6, 'left')
 	gui.trigger('tab_base/2')
 	gui.trigger('slot_0/button', mouse='left')
-	gui.trigger('select_trade_resource/resource_%d' % RES.TOOLS)
+	gui.trigger('select_trade_resource/resource_{:d}'.format(RES.TOOLS))
 	gui.find('slot_0/slider').slide(30)
 
 	# Goal: Pavilion

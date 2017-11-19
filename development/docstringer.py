@@ -1,7 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -49,7 +49,7 @@ for filename in files:
 			docstub = [(indent + '"""\n')]
 			for i in params:
 				if i[0] != 'self' and i[0] != 'cls':
-					docstub.append(("%s@param %s:\n" % (indent, i[0])))
+					docstub.append(("{}@param {}:\n".format(indent, i[0])))
 			docstub.append((indent + '"""\n'))
 			if funk_reg.group(2) == '__init__':
 				newfile.extend(docstub)

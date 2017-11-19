@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -23,7 +23,6 @@ from horizons.command.unit import CreateUnit
 from horizons.constants import UNITS
 from tests.gui import gui_test
 from tests.gui.helper import get_player_ship
-from tests.utils import mark_expected_failure
 
 
 @gui_test(use_dev_map=True, timeout=60)
@@ -82,7 +81,7 @@ def test_selection_groups(gui):
 
 	# Starting a new game assigns player ship to group 1
 	ship = get_player_ship(gui.session)
-	assert gui.session.selected_instances == set([ship])
+	assert gui.session.selected_instances == {ship}
 
 	gui.select([ship])
 
@@ -94,7 +93,7 @@ def test_selection_groups(gui):
 
 	# check group
 	gui.press_key(gui.Key.NUM_2)
-	assert iter(gui.session.selected_instances).next() is ship
+	assert next(iter(gui.session.selected_instances)) is ship
 
 	gui.cursor_click(59, 1, 'right')
 	while (ship.position.x, ship.position.y) != (59, 1):
@@ -114,18 +113,18 @@ def test_selection_groups(gui):
 
 	# check group again
 	gui.press_key(gui.Key.NUM_2)
-	assert len(gui.session.selected_instances) == 1 and \
-	       iter(gui.session.selected_instances).next() is ship
+	assert len(gui.session.selected_instances) == 1
+	assert next(iter(gui.session.selected_instances)) is ship
 
 	# now other one
 	gui.press_key(gui.Key.NUM_3)
-	assert len(gui.session.selected_instances) == 1 and \
-	       iter(gui.session.selected_instances).next() is wh
+	assert len(gui.session.selected_instances) == 1
+	assert next(iter(gui.session.selected_instances)) is wh
 
 	# check group still once again
 	gui.press_key(gui.Key.NUM_2)
-	assert len(gui.session.selected_instances) == 1 and \
-	       iter(gui.session.selected_instances).next() is ship
+	assert len(gui.session.selected_instances) == 1
+	assert next(iter(gui.session.selected_instances)) is ship
 
 	# no group
 	gui.press_key(gui.Key.NUM_0)

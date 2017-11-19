@@ -1,6 +1,5 @@
-# Encoding: utf-8
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -49,7 +48,7 @@ FUN_QUOTES = {
 		"If one does not know to which port one is sailing, no wind is favorable.",
 		"The pessimist complains about the wind; \nthe optimist expects it to change; \nthe realist adjusts the sails.",
 		"Travel beyond the horizon and discover unknown worlds!",
-		u"War… war never changes.",
+		"War… war never changes.",
 		"Support Unknown Horizons with Cookies!",
 		"Wow, looks nearly completed. \n(Neomex)",
 		"Anchor is missing ...",
@@ -109,17 +108,17 @@ def get_random_quote():
 
 stage_text = {
 	# translators: these are descriptions of the current task while loading a game
-	'session_create_world': LazyT(u'Starting engine…'),
-	'session_index_fish': LazyT(u'Catching fish…'),
-	'session_load_gui': LazyT(u'Drawing user interface…'),
-	'session_finish': LazyT(u'Activating timer…'),
-	'load_objects': LazyT(u'Chomping game data…'),
-	'world_load_map': LazyT(u'Shaping islands…'),
-	'world_load_buildings': LazyT(u'Preparing blueprints…'),
-	'world_init_water': LazyT(u'Filling world with water…'),
-	'world_load_units': LazyT(u'Raising animals…'),
-	'world_setup_ai': LazyT(u'Convincing AI…'),
-	'world_load_stuff': LazyT(u'Burying treasures…'),
+	'session_create_world': LazyT('Starting engine…'),
+	'session_index_fish': LazyT('Catching fish…'),
+	'session_load_gui': LazyT('Drawing user interface…'),
+	'session_finish': LazyT('Activating timer…'),
+	'load_objects': LazyT('Chomping game data…'),
+	'world_load_map': LazyT('Shaping islands…'),
+	'world_load_buildings': LazyT('Preparing blueprints…'),
+	'world_init_water': LazyT('Filling world with water…'),
+	'world_load_units': LazyT('Raising animals…'),
+	'world_setup_ai': LazyT('Convincing AI…'),
+	'world_load_stuff': LazyT('Burying treasures…'),
 }
 
 
@@ -136,72 +135,56 @@ class LoadingScreen(Window):
 		res_width = int(width)
 		res_height = int(height)
 
-		center_width = (res_width // 2)
-		center_height = (res_height // 2)
-
-		loading_pos_width = (center_width - 125)
-		loading_pos_height = (center_height - 68)
-
-		quotearea_pos_width = 0
-		quotearea_pos_height = (res_height - 207)
-
-		loading_label_pos_width = (loading_pos_width + 25)
-		loading_label_pos_height = (loading_pos_height)
-
-		qotl_type_label_pos_width = (center_width - 50)
-		qotl_type_label_pos_height = (res_height - 100)
-
-		qotl_label_pos_width = (qotl_type_label_pos_width)
-		qotl_label_pos_height = (res_height - 80)
-
-		version_label_pos_width = (res_width - 150)
-		version_label_pos_height = (res_height - 100)
-
-		loading_stage_pos_width = 150
-		loading_stage_pos_height = (res_height - 80)
-
-		loading_progress_pos_width = (loading_label_pos_width)
-		loading_progress_pos_height = (loading_label_pos_height + 79)
-
 		self._widget = load_uh_widget('loadingscreen.xml')
-		self._widget.position_technique = "center:center"
 
 		loadingscreen = self._widget.findChild(name='loadingscreen')
 		loadingscreen.size = res_width, res_height
 
-		loading_image = self._widget.findChild(name='loading_image')
-		loading_image.position = loading_pos_width, loading_pos_height
+		# centered vertically and horizontally
+		loading_box = self._widget.findChild(name='loading_box')
+		loading_box.position = (
+			(res_width - loading_box.size[0]) // 2,
+			(res_height - loading_box.size[1]) // 2
+		)
 
+		# centered horizontally, aligned at bottom
 		quote_area = self._widget.findChild(name='quote_area')
-		quote_area.position = quotearea_pos_width, quotearea_pos_height
 
-		loading_label = self._widget.findChild(name='loading_label')
-		loading_label.position = loading_label_pos_width, loading_label_pos_height
+		# set size to visible size, to make aligning children resolution independent
+		quote_area.size = (
+			min(res_width, quote_area.size[0]),
+			min(res_height, quote_area.size[1])
+		)
 
-		qotl_type_label = self._widget.findChild(name='qotl_type_label')
-		qotl_type_label.position = qotl_type_label_pos_width, qotl_type_label_pos_height
-
-		qotl_label = self._widget.findChild(name='qotl_label')
-		qotl_label.position = qotl_label_pos_width, qotl_label_pos_height
-
-		version_label = self._widget.findChild(name='version_label')
-		version_label.position = version_label_pos_width, version_label_pos_height
+		quote_area.position = (
+			(res_width - quote_area.size[0]) // 2,
+			res_height - quote_area.size[1]
+		)
 
 		loading_stage = self._widget.findChild(name='loading_stage')
-		loading_stage.position = loading_stage_pos_width, loading_stage_pos_height
+		loading_stage.position = 150, 90
 
-		loading_progress = self._widget.findChild(name='loading_progress')
-		loading_progress.position = loading_progress_pos_width, loading_progress_pos_height
+		quote_type_label = self._widget.findChild(name='quote_type_label')
+		quote_label = self._widget.findChild(name='quote_label')
+
+		quote_type_label.position = (
+			quote_area.size[0] - 600,
+			80
+		)
+		quote_label.position = (
+			quote_area.size[0] - 600,
+			90
+		)
 
 		self._current_step = 0
 
 	def show(self):
-		qotl_type_label = self._widget.findChild(name='qotl_type_label')
-		qotl_label = self._widget.findChild(name='qotl_label')
+		quote_type_label = self._widget.findChild(name='quote_type_label')
+		quote_label = self._widget.findChild(name='quote_label')
 
 		name, quote = get_random_quote()
-		qotl_type_label.text = name
-		qotl_label.text = quote
+		quote_type_label.text = name
+		quote_label.text = quote
 
 		self._widget.show()
 		LoadingProgress.subscribe(self._update)
@@ -224,6 +207,6 @@ class LoadingScreen(Window):
 		label.text = stage_text.get(message.stage, message.stage)
 		label.adaptLayout()
 
-		self._widget.findChild(name='loading_progress').progress = (100 * self._current_step) // self.total_steps
+		self._widget.findChild(name='loading_box_progress').progress = (100 * self._current_step) // self.total_steps
 
 		horizons.globals.fife.engine.pump()

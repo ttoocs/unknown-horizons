@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -21,6 +21,8 @@
 
 import random
 
+from fife.fife import AudioSpaceCoordinate
+
 import horizons.globals
 from horizons.component import Component
 from horizons.extscheduler import ExtScheduler
@@ -38,7 +40,7 @@ class AmbientSoundComponent(Component):
 		"""
 		@param soundfiles: list of paths
 		"""
-		super(AmbientSoundComponent, self).__init__()
+		super().__init__()
 		self.soundfiles = soundfiles or []
 		self.__init()
 
@@ -62,7 +64,7 @@ class AmbientSoundComponent(Component):
 				                  position=self.instance.position.center)
 
 	def load(self, db, worldid):
-		super(AmbientSoundComponent, self).load(db, worldid)
+		super().load(db, worldid)
 		self.__init()
 		# don't start playing all at once
 
@@ -72,7 +74,7 @@ class AmbientSoundComponent(Component):
 		ExtScheduler().add_new_object(self._init_playing, self, run_in=run_in)
 
 	def remove(self):
-		super(AmbientSoundComponent, self).remove()
+		super().remove()
 		self.stop_sound()
 		self.__emitter = None
 
@@ -91,7 +93,7 @@ class AmbientSoundComponent(Component):
 			if position is not None:
 				self.__emitter.setRolloff(1.9)
 				# set to current position
-				self.__emitter.setPosition(position.x, position.y, 1)
+				self.__emitter.setPosition(AudioSpaceCoordinate(position.x, position.y, 1))
 			else:
 				self.__emitter.setRolloff(0) # reset to default
 

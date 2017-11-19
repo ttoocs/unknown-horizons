@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -27,7 +27,7 @@ from horizons.util.color import Color
 from horizons.util.python.callback import Callback
 
 
-class PlayerDataSelection(object):
+class PlayerDataSelection:
 	"""Subwidget for selecting player name and color.
 	Used by Multiplayer and Singleplayer menu."""
 
@@ -44,20 +44,20 @@ class PlayerDataSelection(object):
 
 		# need the id to save it as int in settings file.
 		for color in (Color.get_defaults() if color_palette is None else color_palette):
-			label = Label(name = u'{color}'.format(color=color.name),
-			              text = u"    ",
-			              max_size = (20, 20),
-			              min_size = (20, 20),
-			              background_color = color)
+			label = Label(name='{color}'.format(color=color.name),
+			              text="    ",
+			              max_size=(20, 20),
+			              min_size=(20, 20),
+			              background_color=color)
 			events['{label}/mouseClicked'.format(label=color.name)] = \
 			                             Callback(self.set_color, color.id)
 			colorlabels.append(label)
 
 		# split into three rows with at max 5 entries in each row
 		# right now there are 14 different colors to choose from.
-		for i in xrange(0, len(colorlabels), 5):
+		for i in range(0, len(colorlabels), 5):
 			hbox = HBox(name='line_{index}'.format(index=i))
-			hbox.addChildren(colorlabels[i:i+5])
+			hbox.addChildren(colorlabels[i:i + 5])
 			self.colors.addChild(hbox)
 
 		playertextfield = self.gui.findChild(name='playername')
@@ -86,7 +86,7 @@ class PlayerDataSelection(object):
 	def set_player_name(self, playername):
 		"""Updates the player name"""
 		self.gui.distributeData({
-			'playername': unicode(playername),
+			'playername': str(playername),
 			})
 
 	def get_player_name(self):

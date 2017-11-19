@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -41,7 +41,7 @@ class ChatDialog(Dialog):
 	focus = 'msg'
 
 	def __init__(self, windows, session):
-		super(ChatDialog, self).__init__(windows)
+		super().__init__(windows)
 		self._session = session
 
 	def prepare(self):
@@ -65,7 +65,7 @@ class ChangeNameDialog(Dialog):
 	focus = 'new_name'
 
 	def __init__(self, windows, session):
-		super(ChangeNameDialog, self).__init__(windows)
+		super().__init__(windows)
 		self._session = session
 
 	def prepare(self, instance):
@@ -95,7 +95,7 @@ class ChangeNameDialog(Dialog):
 			RenameObject(namedcomp, new_name).execute(self._session)
 
 
-class CityInfo(object):
+class CityInfo:
 	"""Display city name and inhabitant count at top of the screen."""
 	# FIXME updating the position of this widget should be the responsibility of the
 	# FIXME ingamegui, as it needs to take the resource overview bar into account as
@@ -147,7 +147,7 @@ class CityInfo(object):
 		"""Update display of inhabitants count."""
 		foundlabel = self._child_finder('city_inhabitants')
 		old_amount = int(foundlabel.text) if foundlabel.text else 0
-		foundlabel.text = u' {amount:>4d}'.format(amount=old_amount + message.change)
+		foundlabel.text = ' {amount:>4d}'.format(amount=old_amount + message.change)
 		foundlabel.resizeToContent()
 
 	def _update_settlement(self):
@@ -161,7 +161,7 @@ class CityInfo(object):
 			city_name_label.enable_cursor_change_on_hover()
 		else: # no name changes
 			cb = lambda: AmbientSoundComponent.play_special('error')
-			helptext = u""
+			helptext = ""
 			city_name_label.disable_cursor_change_on_hover()
 
 		self._widget.mapEvents({
@@ -170,7 +170,8 @@ class CityInfo(object):
 		city_name_label.helptext = helptext
 
 		foundlabel = self._child_finder('owner_emblem')
-		foundlabel.image = 'content/gui/icons/widgets/cityinfo/settlement_%s.png' % (self._settlement.owner.color.name)
+		foundlabel.image = 'content/gui/icons/widgets/cityinfo/settlement_{}.png'.format(
+			self._settlement.owner.color.name)
 		foundlabel.helptext = self._settlement.owner.name
 
 		foundlabel = self._child_finder('city_name')
@@ -178,7 +179,7 @@ class CityInfo(object):
 		foundlabel.resizeToContent()
 
 		foundlabel = self._child_finder('city_inhabitants')
-		foundlabel.text = u' {amount:>4d}'.format(amount=self._settlement.inhabitants)
+		foundlabel.text = ' {amount:>4d}'.format(amount=self._settlement.inhabitants)
 		foundlabel.resizeToContent()
 
 		self._update_position()

@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -23,10 +23,9 @@ import logging
 
 from horizons.ai.aiplayer.constants import BUILD_RESULT, BUILDING_PURPOSE
 from horizons.entities import Entities
-from horizons.util.python import decorators
 
 
-class BuildingEvaluator(object):
+class BuildingEvaluator:
 	"""Class representing a set of instructions for building a building complex along with its value."""
 
 	log = logging.getLogger("ai.aiplayer.buildingevaluator")
@@ -141,10 +140,6 @@ class BuildingEvaluator(object):
 		"""Return an alignment value based on the outline of the given coordinates list."""
 		return cls._get_alignment_from_outline(area_builder, cls._get_outline_coords_list(coords_list))
 
-	def __cmp__(self, other):
-		"""Objects of this class should never be compared to ensure deterministic ordering and good performance."""
-		raise NotImplementedError()
-
 	@property
 	def purpose(self):
 		"""Return the BUILDING_PURPOSE constant relevant to the builder."""
@@ -198,10 +193,8 @@ class BuildingEvaluator(object):
 
 		best_index = 0
 		best_value = evaluators[0].value
-		for i in xrange(1, len(evaluators)):
+		for i in range(1, len(evaluators)):
 			if evaluators[i].value > best_value:
 				best_index = i
 				best_value = evaluators[i].value
 		return evaluators[best_index]
-
-decorators.bind_all(BuildingEvaluator)

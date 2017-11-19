@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -32,7 +32,6 @@ from horizons.gui.widgets.statswidget import StatsWidget
 from horizons.gui.windows import Window
 from horizons.i18n import gettext as T
 from horizons.scheduler import Scheduler
-from horizons.util.python import decorators
 from horizons.util.python.callback import Callback
 
 
@@ -76,7 +75,7 @@ class ProductionOverview(MultiPageStatsWidget, Window):
 		Scheduler().add_new_object(Callback(self._refresh_tick), self, run_in=GAME_SPEED.TICKS_PER_SECOND, loops=-1)
 
 	def _init_gui(self):
-		super(ProductionOverview, self)._init_gui()
+		super()._init_gui()
 		self._gui.findChild(name=OkButton.DEFAULT_NAME).capture(self._windows.close)
 		self._gui.findChild(name='forwardButton').capture(self.go_to_next_page)
 		self._gui.findChild(name='backwardButton').capture(self.go_to_previous_page)
@@ -95,6 +94,7 @@ class ProductionOverview(MultiPageStatsWidget, Window):
 		"""
 		Returns number of pages the resources need.
 		"""
+		# int() and float() wrapping needed?
 		return int(math.ceil(len(self.displayed_resources) / float(self.LINES_PER_PAGE)))
 
 	def go_to_next_page(self):
@@ -115,7 +115,7 @@ class ProductionOverview(MultiPageStatsWidget, Window):
 		self.refresh()
 
 	def refresh(self):
-		super(ProductionOverview, self).refresh()
+		super().refresh()
 
 		name = self.settlement.get_component(NamedComponent).name
 		text = T('Production overview of {settlement}').format(settlement=name)
@@ -154,20 +154,18 @@ class ProductionOverview(MultiPageStatsWidget, Window):
 		res_name = self.db.get_res_name(resource_id)
 
 		icon = create_resource_icon(resource_id, self.db)
-		icon.name = 'icon_%s' % resource_id
+		icon.name = 'icon_{}'.format(resource_id)
 		icon.max_size = icon.min_size = icon.size = (20, 20)
 
-		label = widgets.Label(name = 'resource_%s' % resource_id)
+		label = widgets.Label(name='resource_{}'.format(resource_id))
 		label.text = res_name
 		label.min_size = (100, 20)
 
-		amount_label = widgets.Label(name = 'produced_sum_%s' % resource_id)
-		amount_label.text = unicode(amount)
+		amount_label = widgets.Label(name='produced_sum_{}'.format(resource_id))
+		amount_label.text = str(amount)
 
 		hbox = widgets.HBox()
 		hbox.addChild(icon)
 		hbox.addChild(label)
 		hbox.addChild(amount_label)
 		container.addChild(hbox)
-
-decorators.bind_all(ProductionOverview)

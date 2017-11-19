@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -20,17 +20,16 @@
 # ###################################################
 
 import copy
+from typing import Dict, Tuple
 
 from horizons.command.building import Build
 from horizons.constants import BUILDINGS
 from horizons.entities import Entities
-from horizons.ext.typing import Tuple
-from horizons.util.python import decorators
 from horizons.util.shapes import Point, Rect
 from horizons.world.building.production import Mine
 
 
-class BasicBuilder(object):
+class BasicBuilder:
 	"""An object of this class represents a non-checked plan to build a building at a specific place."""
 
 	rotations = [45, 135, 225, 315]
@@ -73,7 +72,7 @@ class BasicBuilder(object):
 		"""Build the building."""
 		building_class = Entities.buildings[self.building_id]
 		building_level = building_class.get_initial_level(land_manager.owner)
-		action_set_id = building_class.get_random_action_set(level = building_level)
+		action_set_id = building_class.get_random_action_set(level=building_level)
 
 		build_position = Entities.buildings[self.building_id].check_build(land_manager.session,
 		    Point(*self.coords), rotation=self.rotations[self.orientation],
@@ -94,10 +93,6 @@ class BasicBuilder(object):
 		extra_resources = copy.copy(extra_resources) if extra_resources is not None else {}
 		inventories = [land_manager.settlement, ship]
 		return Build.check_resources(extra_resources, Entities.buildings[self.building_id].costs, land_manager.owner, inventories)[0]
-
-	def __cmp__(self, other):
-		"""Objects of this class should never be compared to ensure deterministic ordering and good performance."""
-		raise NotImplementedError()
 
 	def __str__(self):
 		return 'BasicBuilder of building {0:d} at {1!s}, orientation {2:d}'. \
@@ -122,5 +117,3 @@ class BasicBuilder(object):
 		if key not in cls.__cache:
 			cls.__cache[key] = BasicBuilder(building_id, coords, orientation)
 		return cls.__cache[key]
-
-decorators.bind_all(BasicBuilder)

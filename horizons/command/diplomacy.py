@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -28,13 +28,16 @@ class GenericDiplomacyCommand(Command):
 		self.player1_id = a.worldid
 		self.player2_id = b.worldid
 
+
 class AddAllyPair(GenericDiplomacyCommand):
 	def __call__(self, issuer):
 		player1 = WorldObject.get_object_by_id(self.player1_id)
 		player2 = WorldObject.get_object_by_id(self.player2_id)
 		player1.session.world.diplomacy.add_ally_pair(player1, player2)
 
+
 Command.allow_network(AddAllyPair)
+
 
 class AddEnemyPair(GenericDiplomacyCommand):
 	def __call__(self, issuer):
@@ -42,12 +45,15 @@ class AddEnemyPair(GenericDiplomacyCommand):
 		player2 = WorldObject.get_object_by_id(self.player2_id)
 		player1.session.world.diplomacy.add_enemy_pair(player1, player2)
 
+
 Command.allow_network(AddEnemyPair)
+
 
 class AddNeutralPair(GenericDiplomacyCommand):
 	def __call__(self, issuer):
 		player1 = WorldObject.get_object_by_id(self.player1_id)
 		player2 = WorldObject.get_object_by_id(self.player2_id)
 		player1.session.world.diplomacy.add_neutral_pair(player1, player2)
+
 
 Command.allow_network(AddNeutralPair)

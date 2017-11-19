@@ -1,5 +1,5 @@
 # ###################################################
-# Copyright (C) 2008-2016 The Unknown Horizons Team
+# Copyright (C) 2008-2017 The Unknown Horizons Team
 # team@unknown-horizons.org
 # This file is part of Unknown Horizons.
 #
@@ -38,7 +38,7 @@ class FieldBuilder(Component):
 	NAME = 'FieldBuilder'
 
 	def __init__(self, field):
-		super(FieldBuilder, self).__init__()
+		super().__init__()
 		self.field = Entities.buildings[field]
 
 	@property
@@ -47,8 +47,7 @@ class FieldBuilder(Component):
 
 	@property
 	def total_cost(self):
-		return dict((res, amount * self.how_many)
-		            for res, amount in self.field.costs.iteritems())
+		return {res: amount * self.how_many for res, amount in self.field.costs.items()}
 
 	def check_resources(self):
 		return Build.check_resources({}, self.total_cost, self.instance.owner,
