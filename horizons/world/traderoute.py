@@ -31,6 +31,8 @@ from horizons.util.shapes import Circle
 from horizons.util.worldobject import WorldObject
 from horizons.world.units.unitexeptions import MoveNotPossible
 
+def cmp(a, b):
+    return (a > b) - (a < b) 
 
 class TradeRoute(ChangeListener):
 	"""
