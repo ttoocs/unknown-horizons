@@ -53,8 +53,9 @@ class ProductionChain:
 		self.settlement_manager = settlement_manager
 		self.resource_id = resource_id
 		self.chain = self._get_chain(resource_id, resource_producer, 1.0)
-		self.chain.assign_identifier('/{:d},{:d}'.format(
-			self.settlement_manager.worldid, self.resource_id))
+		if not self.chain is None:
+			self.chain.assign_identifier('/{:d},{:d}'.format(
+				self.settlement_manager.worldid, self.resource_id))
 
 	def _get_chain(self, resource_id, resource_producer, production_ratio):
 		"""Return a ProductionChainSubtreeChoice if it is possible to produce the resource, None otherwise."""
