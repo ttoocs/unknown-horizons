@@ -8,16 +8,16 @@ for i in $@; do
 		TESTS=""
 	fi
 done
-
-if which xvfb-run >/dev/null 2>/dev/null ; then
-	echo "Running tests using xvfb-run"
-	xvfb-run pytest --gui-tests $TESTS $@
-	exit $?
-fi
-
+#
+#if which xvfb-run >/dev/null 2>/dev/null ; then
+#	echo "Running tests using xvfb-run"
+#	xvfb-run pytest --gui-tests $TESTS $@
+#	exit $?
+#fi
+#
 if which Xvfb >/dev/null 2>/dev/null ; then
 	echo "Running tests using Xvfb"
-	Xvfb :99 2>/dev/null &
+	Xvfb -- :99 -ac -screen 0 1290x1024x16 2>/dev/null &
 	PID=$!
 	DISPLAY=":99" pytest --gui-tests $TESTS $@
 	RET=$?
