@@ -65,7 +65,8 @@ class ExtScheduler(object, metaclass=ManualConstructionSingleton):
 		while self.schedule:
 			elem = self.schedule[0] # heap, first elem is smallest
 			if elem[0] <= time.time():
-				dont_use = heapq.heappop(self.schedule)
+				dont_use = heapq.heappop(self.schedule) #Broke when running overnight: 
+				#TypeError: '<' not supported between instances of '_ExtCallbackObject' and '_ExtCallbackObject
 				assert dont_use is elem
 				obj = elem[1]
 				obj.callback()
