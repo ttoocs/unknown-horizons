@@ -28,8 +28,8 @@ script:
   - python3 -c 'from fife import fife; print(fife.getVersion())'
   - isort -c -rc horizons tests *.py
   - pycodestyle horizons tests *.py development
-  - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs
-  - RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs
+  - COVERAGE_FILE=.coverage.nongui pytest -r X --verbose --cov --cov-report= -rs
+  - RUNCOV=1 pytest -r X --gui-tests tests/gui --verbose --cov --cov-report= -rs
 
 after_success:
   - coverage combine
