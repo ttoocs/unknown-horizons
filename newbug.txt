@@ -1,0 +1,38 @@
+Ship created and weapons loaded.
+Traceback (most recent call last):
+  File "./run_uh.py", line 385, in <module>
+    main()
+  File "./run_uh.py", line 127, in main
+    ret = horizons.main.start(options)
+  File "/home/fu-fu/source/unknown-horizons/horizons/main.py", line 255, in start
+    horizons.globals.fife.run()
+  File "/home/fu-fu/source/unknown-horizons/horizons/engine/engine.py", line 280, in run
+    self.loop()
+  File "/home/fu-fu/source/unknown-horizons/horizons/engine/engine.py", line 297, in loop
+    f()
+  File "/home/fu-fu/source/unknown-horizons/horizons/timer.py", line 112, in check_tick
+    f(self.tick_next_id)
+  File "/home/fu-fu/source/unknown-horizons/horizons/scheduler.py", line 95, in tick
+    callback.callback()
+  File "/home/fu-fu/source/unknown-horizons/horizons/world/units/ship.py", line 110, in _move_tick
+    super()._move_tick(resume)
+  File "/home/fu-fu/source/unknown-horizons/horizons/world/units/movingobject.py", line 208, in _move_tick
+    self._movement_finished()
+  File "/home/fu-fu/source/unknown-horizons/horizons/world/units/ship.py", line 131, in _movement_finished
+    super()._movement_finished()
+  File "/home/fu-fu/source/unknown-horizons/horizons/world/units/movingobject.py", line 160, in _movement_finished
+    self.move_callbacks.execute()
+  File "/home/fu-fu/source/unknown-horizons/horizons/util/python/weakmethodlist.py", line 52, in execute
+    callback()
+  File "/home/fu-fu/source/unknown-horizons/horizons/util/python/weakmethod.py", line 39, in __call__
+    return self.function(*args, **kwargs)
+  File "/home/fu-fu/source/unknown-horizons/horizons/util/python/callback.py", line 47, in __call__
+    return self.callback(*self.args, **self.kwargs)
+  File "/home/fu-fu/source/unknown-horizons/horizons/ai/aiplayer/mission/foundsettlement.py", line 93, in _reached_destination_area
+    self.warehouse = builder.execute(self.land_manager, ship=self.ship)
+  File "/home/fu-fu/source/unknown-horizons/horizons/ai/aiplayer/basicbuilder.py", line 87, in execute
+    assert result
+AssertionError
+AL lib: (EE) alc_cleanup: 1 device not closed
+
+- With lots of ships settling about on small islands.
