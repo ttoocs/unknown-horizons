@@ -29,7 +29,7 @@ script:
   - isort -c -rc horizons tests *.py
   - pycodestyle horizons tests *.py development
   - COVERAGE_FILE=.coverage.nongui pytest -r X --verbose --cov --cov-report= -rs
-  - RUNCOV=1 pytest -r X --gui-tests tests/gui --verbose --cov --cov-report= -rs
+  - RUNCOV=1 pytest -r Xx --gui-tests tests/gui --verbose --cov --cov-report= -rs
 
 after_success:
   - coverage combine
