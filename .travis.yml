@@ -13,7 +13,7 @@ addons:
 before_install:
   - "cat /etc/apt/sources.list"
 #  - "cat /tmp/errorplz"
-  - "sed -ri 's/trusty/artful/' /etc/apt/sources.list"
+  - "sudo sed -ri 's/trusty/artful/' /etc/apt/sources.list"
   - "cat /etc/apt/sources.list"
   - "sudo apt-get update"
   - "sudo apt-get upgrade"
