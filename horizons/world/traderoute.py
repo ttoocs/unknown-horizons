@@ -32,8 +32,6 @@ from horizons.util.worldobject import WorldObject
 from horizons.world.units.unitexeptions import MoveNotPossible
 
 
-def cmp(a, b):
-    return (a > b) - (a < b)
 
 
 class TradeRoute(ChangeListener):
@@ -76,7 +74,7 @@ class TradeRoute(ChangeListener):
 
 	def move_waypoint(self, position, direction):
 		# Error sounds for invalid move actions are triggered in
-		# gui.widgets.routeconfig, not here.
+		# GUI.Widgets.routeconfig, not here.
 		was_enabled = self.enabled
 		if was_enabled:
 			self.disable()
@@ -131,7 +129,7 @@ class TradeRoute(ChangeListener):
 			for res in copy.copy(self.current_transfer):
 				# make sure we don't keep trying to (un)load something when the decision about that resource has changed
 				if self.current_transfer[res] == 0 or res not in self.get_location()['resource_list'] or \
-				   cmp(self.current_transfer[res], 0) != cmp(self.get_location()['resource_list'][res], 0):
+				   (self.current_transfer[res] < 0 != self.get_location()['resource_list'][res] < 0): #If unload/load has changed, (based on signs).
 					del self.current_transfer[res]
 
 		settlement = warehouse.settlement
