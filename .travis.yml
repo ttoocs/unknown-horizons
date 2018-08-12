@@ -6,12 +6,17 @@ services:
 arch:
   repos:
   packages:
+    #FIFE: (from AUR)
     - fife-git
-    - fifechan-git 
+    - fifechan-git
+    # Style tests:
     - python-isort
+    - python-pycodestyle
+    # Misc. Required for tests.
     - python-pytest
     - python-pytest-isort
-    - python-pycodestyle
+    - python-pytest-cov
+    - python-greenlet
   script:
     - python3 -c 'from fife import fife; print(fife.getVersion())'
     - isort -c -rc horizons tests *.py
