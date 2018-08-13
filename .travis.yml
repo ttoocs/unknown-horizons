@@ -20,10 +20,13 @@ arch:
     #Pytest is currently broken in python 3.7 (default for arch)
     - python36
   script:
-    - UID=`id -u` ; sudo chown $UID $TRAVIS_BUILD_DIR -R
+    - TERM=screen
+    - echo -e "travis_fold:start:$1\033[33;1m$2\033[0m"
+    - sudo chown $UID $TRAVIS_BUILD_DIR -R
     - python3.6 -m venv py36
     - source py36/bin/activate
     - pip install -r requirements.txt
+    - echo -e "\ntravis_fold:end:$1\r"
     - python3 -c 'from fife import fife; print(fife.getVersion())'
     - isort -c -rc horizons tests *.py
     - pycodestyle horizons tests *.py development
