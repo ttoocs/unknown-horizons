@@ -41,17 +41,19 @@ arch:
     - fold_end more_init
 
     #Regular build/testing.
+    - FAILED="0"
     - python3 -c 'from fife import fife; print(fife.getVersion())'
-    - TEXT_SETRED ; isort -c -rc horizons tests *.py ; TEXT_RESET;
-    - TEXT_SETRED ; pycodestyle horizons tests *.py development ; TEXT_RESET;
-    - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs --color=yes
+    - TEXT_SETRED ; isort -c -rc horizons tests *.py || FAILED=1 ; TEXT_RESET;
+    - TEXT_SETRED ; pycodestyle horizons tests *.py development || FAILED=1 ; TEXT_RESET;
+    - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs --color=yes || FAILED=1
     - Xvfb :99 +xinerama +iglx 2> /dev/null & XPID=$!
     - sleep 10 
-    - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs --color=yes
+    - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs --color=yes || FAILED=1
     - kill -9 $XPID
 #after_success:  #fudge it here?
     - coverage combine
     - coveralls
+    - exit $FAILED
 
 script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
