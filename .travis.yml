@@ -19,15 +19,15 @@ arch:
     - echo "Install Packages:"
  
     - INSTALLWRAPPER fifechan-git fife-git
-    - INSTALLWRAPPER python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenleti
+    - INSTALLWRAPPER python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenleti
     
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
 
     #Fix too-up-to-date python (There is a patch to fix needing this)
-    - python3.6 -m venv py36
-    - source py36/bin/activate
-    - pip install -r requirements.txt
+    # - python3.6 -m venv py36
+    # - source py36/bin/activate
+    # - pip install -r requirements.txt
 
     - echo -e "\ntravis_fold:end:MORE_INIT\r"
 
