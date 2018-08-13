@@ -21,7 +21,7 @@ arch:
     
 
     - echo "Install Packages:"
-    - PYTHON_PKGS="python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-coverage python-greenlet python-yaml python-polib"
+    - PYTHON_PKGS="python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-coverage python-greenlet python-yaml python-polib python-pytest-mock"
     - INSTALLWRAPPER fifechan-git fife-git
     - INSTALLWRAPPER python $PYTHON_PKGS
     - INSTALLWRAPPER xorg-server-xvfb
@@ -42,7 +42,7 @@ arch:
     - TEXT_SETRED ; isort -c -rc horizons tests *.py ; TEXT_RESET;
     - TEXT_SETRED ; pycodestyle horizons tests *.py development ; TEXT_RESET;
     - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs --color=yes
-    - Xvfb :99 +xinerama +iglx & XPID=$!
+    - Xvfb :99 +xinerama +iglx 2> /dev/null & XPID=$!
     - sleep 10 
     - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs --color=yes
     - kill -9 $XPID
