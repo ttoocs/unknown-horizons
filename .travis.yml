@@ -17,7 +17,13 @@ arch:
     - python-pytest-isort
     - python-pytest-cov
     - python-greenlet
+    #Pytest is currently broken in python 3.7 (default for arch)
+    - python36
   script:
+    - UID=`id -u` ; sudo chown $UID $TRAVIS_BUILD_DIR -R
+    - python3.6 -m venv py36
+    - source py36/bin/activate
+    - pip install -r requirements.txt
     - python3 -c 'from fife import fife; print(fife.getVersion())'
     - isort -c -rc horizons tests *.py
     - pycodestyle horizons tests *.py development
