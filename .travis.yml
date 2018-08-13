@@ -38,4 +38,4 @@ after_success:
   - coveralls
 
 script:
-  - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
+  - "curl -s https://raw.githubusercontent.com/ttoocs/arch-travis/master/arch-travis.sh | bash"
