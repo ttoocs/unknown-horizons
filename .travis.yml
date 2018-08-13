@@ -23,7 +23,7 @@ arch:
     - echo "Install Packages:"
  
     - INSTALLWRAPPER fifechan-git fife-git
-    - INSTALLWRAPPER python-pip # python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
+    - INSTALLWRAPPER python python-pip python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
     - MISCWRAPPER "PIP INSTALLS" sudo pip install -r requirements.txt
     
     #Chown for collections
