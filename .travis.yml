@@ -10,16 +10,21 @@ arch:
     - echo -e "travis_fold:start:MORE_INIT\033[33;1mMORE_INIT\033[0m"
     #Helpers
     - export TERM=screen
+    - function TEXT_SETRED() { echo -en '\033[0;31m' ; }
+    - function TEXT_SETGREEN() { echo -en '\033[0;32m' ; }
+    - function TEXT_SETYELLOW() { echo -en '\033[0;33m' ; }
+    - function TEXT_RESET() { echo -en '\033[0m' ; }
     - set -o pipefail
     - function ONELINE() { while read line; do echo -ne "\t\033[2K\r"; echo -n $line ; done ; echo -ne "\t\033[2K\r" ; }
-    - function INSTALLWRAPPER() { (yay -S --noconfirm --color always $@ 2>&1 | tee tmp.log | ONELINE && echo "Installing $1... passed." || ( echo "Installing $1... failed." ; cat tmp.log ; exit 1 )) }
-    - function TEXT_SETRED() {echo -en '\033[0;31m' }
-    - function TEXT_RESET() {echo -en '\033[0m' }
+    - function MISCWRAPPER() { NAME=$1; shift; ( eval $@ ) 2>&1 | tee tmp.log | ONELINE && TEXT_SETGREEN && echo $NAME" PASSED" && TEXT_RESET || ( TEXT_SETRED ; echo $NAME" FAILED" ; cat tmp.log ; TEXT_RESET ; exit 1 ) }
+    - function INSTALLWRAPPER() { MISCWRAPPER Installing\ $1 yay -S --noconfirm --color always $@ ; }
+    
 
     - echo "Install Packages:"
  
     - INSTALLWRAPPER fifechan-git fife-git
-    - INSTALLWRAPPER python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenleti
+    - INSTALLWRAPPER python-pip # python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
+    - MISCWRAPPER "PIP INSTALLS" pip install -r requirements.txt
     
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
@@ -35,8 +40,9 @@ arch:
     - python3 -c 'from fife import fife; print(fife.getVersion())'
     - TEXT_SETRED ; isort -c -rc horizons tests *.py ; TEXT_RESET;
     - TEXT_SETRED ; pycodestyle horizons tests *.py development ; TEXT_RESET;
-    - Xvfb :99 +xinerama +iglx 2>/dev/null & XPID=$!
     - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs --color=yes
+    - Xvfb :99 +xinerama +iglx & XPID=$!
+    - sleep 10 
     - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs --color=yes
     - kill -9 $XPID
 
