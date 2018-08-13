@@ -20,16 +20,22 @@ arch:
     #Pytest is currently broken in python 3.7 (default for arch)
 #    - python36
   script:
-    - echo -e "travis_fold:start:MORE_INIT\033[33;1m$2\033[0m"
+    - echo -e "travis_fold:start:MORE_INIT\033[33;1mMORE_INIT\033[0m"
     #Moving packages into this fold.
-    - echo "Install Packages:"
+    - echo "Some more setup for me"
     - export TERM=screen
     - set -o pipefail
-    - ( yay -S fife-git --noconfirm 2>1 | tee tmp.log | while read line; do echo -ne "\033[2K\r"; echo -n $line ; done ) && echo "Fife-git installed fine." || ( echo "Fife-git failed:" ; cat tmp.log ; exit 1)
+    #Helpers
+    - function ONELINE() { while read line; do echo -ne "\t\033[2K\r"; echo -n $line ; done }
+    - function INSTALLWRAPPER() { (yay -S $@ 2>&1 | tee tmp.log | ONELINE && echo "Installing $1... passed." || ( echo "Installing $1... failed." ; cat tmp.log ; exit 1 ) }
 
-    - ( yay -S fifechan-git --noconfirm 2>1 | tee tmp.log |       while read line; do echo -ne "\033[2K\r"; echo -n $line ; done )      && echo "FifeChan-git installed fine." || ( echo "FifeChan-git failed:" ; cat tmp.log ; exit 1)
-
-    - ( yay -S python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet --noconfirm     while read line; do echo -ne "\033[2K\r"; echo -n $line ; done )     && echo "Python installed fine." || ( echo "Python failed:" ; cat tmp.log ; exit 1)
+    - echo "Install Packages:"
+ 
+    - INSTALLWRAPPER fifechan-git fife-git
+    - INSTALLWRAPPER python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
+#    - ( yay -S fife-git --noconfirm 2>%&1 | tee tmp.log | ONELINE && echo "Fife-git installed fine." || ( echo "Fife-git failed:" ; cat tmp.log ; exit 1)
+#    - ( yay -S fifechan-git --noconfirm 2>1 | tee tmp.log | ONELINE && echo "FifeChan-git installed fine." || ( echo "FifeChan-git failed:" ; cat tmp.log ; exit 1)
+#    - ( yay -S python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet --noconfirm | tee tmp.log | ONELINE && echo "Python installed fine." || ( echo "Python failed:" ; cat tmp.log ; exit 1)
     
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
