@@ -15,7 +15,7 @@ arch:
     - function TEXT_SETYELLOW() { echo -en '\033[0;33m' ; }
     - function TEXT_RESET() { echo -en '\033[0m' ; }
     - set -o pipefail
-    - function ONELINE() { while read line; do echo -ne "\t\033[2K\r"; echo -n $line ; done ; echo -ne "\t\033[2K\r" ; }
+    - function ONELINE() { while read line; do echo -ne "\033[2K\r"; echo -n $line ; done ; echo -ne "\033[2K\r" ; }
     - function MISCWRAPPER() { NAME=$1; shift; ( eval $@ ) 2>&1 | tee tmp.log | ONELINE && TEXT_SETGREEN && echo $NAME" PASSED" && TEXT_RESET || ( TEXT_SETRED ; echo $NAME" FAILED" ; cat tmp.log ; TEXT_RESET ; exit 1 ) }
     - function INSTALLWRAPPER() { MISCWRAPPER Installing\ $1 yay -S --noconfirm --color always $@ ; }
     
@@ -24,7 +24,7 @@ arch:
  
     - INSTALLWRAPPER fifechan-git fife-git
     - INSTALLWRAPPER python-pip # python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
-    - MISCWRAPPER "PIP INSTALLS" pip install -r requirements.txt
+    - MISCWRAPPER "PIP INSTALLS" sudo pip install -r requirements.txt
     
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
