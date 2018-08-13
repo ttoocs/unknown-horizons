@@ -12,12 +12,14 @@ arch:
     - export TERM=screen
     - set -o pipefail
     - function ONELINE() { while read line; do echo -ne "\t\033[2K\r"; echo -n $line ; done ; echo -ne "\t\033[2K\r" ; }
-    - function INSTALLWRAPPER() { (yay -S --noconfirm $@ 2>&1 | tee tmp.log | ONELINE && echo "Installing $1... passed." || ( echo "Installing $1... failed." ; cat tmp.log ; exit 1 )) }
+    - function INSTALLWRAPPER() { (yay -S --noconfirm --color always $@ 2>&1 | tee tmp.log | ONELINE && echo "Installing $1... passed." || ( echo "Installing $1... failed." ; cat tmp.log ; exit 1 )) }
+    - function TEXT_SETRED() {echo -en '\033[0;31m' }
+    - function TEXT_RESET() {echo -en '\033[0m' }
 
     - echo "Install Packages:"
  
     - INSTALLWRAPPER fifechan-git fife-git
-    - INSTALLWRAPPER python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
+    - INSTALLWRAPPER python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenleti
     
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
@@ -31,11 +33,11 @@ arch:
 
     #Regular build/testing.
     - python3 -c 'from fife import fife; print(fife.getVersion())'
-    - isort -c -rc horizons tests *.py
-    - pycodestyle horizons tests *.py development
+    - TEXT_SETRED ; isort -c -rc horizons tests *.py ; TEXT_RESET;
+    - TEXT_SETRED ; pycodestyle horizons tests *.py development ; TEXT_RESET;
     - Xvfb :99 +xinerama +iglx 2>/dev/null & XPID=$!
-    - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs
-    - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs
+    - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs --color=yes
+    - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs --color=yes
     - kill -9 $XPID
 
 after_success: 
