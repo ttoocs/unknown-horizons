@@ -24,9 +24,9 @@ arch:
     - echo -e "travis_fold:start:MORE INIT\033[33;1m$2\033[0m"
     #Moving packages into this fold.
     - echo "Install Packages:"
-    - ( yay -S fife-git --noconfirm ) > tmp.log && echo "Fife-git installed fine." || ( echo "Fife-git failed:" ; cat tmp.log )
-    - ( yay -S fifechan-git --noconfirm ) > tmp.log && echo "FifeChan-git installed fine." || ( echo "FifeChan-git failed:" ; cat tmp.log )
-    - ( yay -S python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet --noconfirm ) > tmp.log && echo "Python installed fine." || ( echo "Python failed:" ; cat tmp.log )
+    - ( yay -S fife-git --noconfirm ) > tmp.log 2>&1 && echo "Fife-git installed fine." || ( echo "Fife-git failed:" ; cat tmp.log )
+    - ( yay -S fifechan-git --noconfirm ) > tmp.log 2>&1 && echo "FifeChan-git installed fine." || ( echo "FifeChan-git failed:" ; cat tmp.log )
+    - ( yay -S python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet --noconfirm ) > tmp.log 2>&1 && echo "Python installed fine." || ( echo "Python failed:" ; cat tmp.log )
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
     #Fix too-up-to-date python
