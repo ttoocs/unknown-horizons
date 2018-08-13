@@ -27,7 +27,7 @@ arch:
     - set -o pipefail
     #Helpers
     - function ONELINE() { while read line; do echo -ne "\t\033[2K\r"; echo -n $line ; done }
-    - function INSTALLWRAPPER() { (yay -S $@ 2>&1 | tee tmp.log | ONELINE && echo "Installing $1... passed." || ( echo "Installing $1... failed." ; cat tmp.log ; exit 1 ) }
+    - function INSTALLWRAPPER() { (yay -S --noconfirm $@ 2>&1 | tee tmp.log | ONELINE && echo "Installing $1... passed." || ( echo "Installing $1... failed." ; cat tmp.log ; exit 1 )) }
 
     - echo "Install Packages:"
  
