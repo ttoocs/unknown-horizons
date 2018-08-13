@@ -6,26 +6,11 @@ services:
 arch:
   repos:
   packages:
-    #FIFE: (from AUR)
-    # - fife-git
-    # - fifechan-git
-    # Style tests:
-    # - python-isort
-    # - python-pycodestyle
-    # Misc. Required for tests.
-#    - python-pytesti
-#    - python-pytest-isort
-#    - python-pytest-cov
-#    - python-greenlet
-    #Pytest is currently broken in python 3.7 (default for arch)
-#    - python36
   script:
     - echo -e "travis_fold:start:MORE_INIT\033[33;1mMORE_INIT\033[0m"
-    #Moving packages into this fold.
-    - echo "Some more setup for me"
+    #Helpers
     - export TERM=screen
     - set -o pipefail
-    #Helpers
     - function ONELINE() { while read line; do echo -ne "\t\033[2K\r"; echo -n $line ; done ; echo -ne "\t\033[2K\r" ; }
     - function INSTALLWRAPPER() { (yay -S --noconfirm $@ 2>&1 | tee tmp.log | ONELINE && echo "Installing $1... passed." || ( echo "Installing $1... failed." ; cat tmp.log ; exit 1 )) }
 
@@ -33,23 +18,25 @@ arch:
  
     - INSTALLWRAPPER fifechan-git fife-git
     - INSTALLWRAPPER python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
-#    - ( yay -S fife-git --noconfirm 2>%&1 | tee tmp.log | ONELINE && echo "Fife-git installed fine." || ( echo "Fife-git failed:" ; cat tmp.log ; exit 1)
-#    - ( yay -S fifechan-git --noconfirm 2>1 | tee tmp.log | ONELINE && echo "FifeChan-git installed fine." || ( echo "FifeChan-git failed:" ; cat tmp.log ; exit 1)
-#    - ( yay -S python36 python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet --noconfirm | tee tmp.log | ONELINE && echo "Python installed fine." || ( echo "Python failed:" ; cat tmp.log ; exit 1)
     
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
-    #Fix too-up-to-date python
+
+    #Fix too-up-to-date python (There is a patch to fix needing this)
     - python3.6 -m venv py36
     - source py36/bin/activate
     - pip install -r requirements.txt
-    #Regular build/testing.
+
     - echo -e "\ntravis_fold:end:MORE_INIT\r"
+
+    #Regular build/testing.
     - python3 -c 'from fife import fife; print(fife.getVersion())'
     - isort -c -rc horizons tests *.py
     - pycodestyle horizons tests *.py development
+    - Xvfb :99 +xinerama +iglx 2>/dev/null & XPID=$!
     - COVERAGE_FILE=.coverage.nongui pytest --verbose --cov --cov-report= -rs
-    - RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs
+    - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs
+    - kill -9 $XPID
 
 after_success: 
   - coverage combine
