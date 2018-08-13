@@ -7,7 +7,10 @@ arch:
   repos:
   packages:
   script:
-    - echo -e "travis_fold:start:MORE_INIT\033[33;1mMORE_INIT\033[0m"
+    - function fold_start() {  echo -e "travis_fold:start:$1\033[33;1m$2\033[0m" }
+    - fold_start more_init 'More_initalizations'
+    - fold_end() {  echo -e "\ntravis_fold:end:$1\r" }
+
     #Helpers
     - export TERM=screen
     - function TEXT_SETRED() { echo -en '\033[0;31m' ; }
@@ -35,7 +38,7 @@ arch:
     # - source py36/bin/activate
     # - pip install -r requirements.txt
 
-    - echo -e "\ntravis_fold:end:MORE_INIT\r"
+    - fold_end more_init
 
     #Regular build/testing.
     - python3 -c 'from fife import fife; print(fife.getVersion())'
@@ -46,10 +49,9 @@ arch:
     - sleep 10 
     - DISPLAY=:99 RUNCOV=1 pytest --gui-tests tests/gui --verbose --cov --cov-report= -rs --color=yes
     - kill -9 $XPID
-
-after_success: 
-  - coverage combine
-  - coveralls
+#after_success:  #fudge it here?
+    - coverage combine
+    - coveralls
 
 script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
