@@ -20,10 +20,10 @@ arch:
     #Pytest is currently broken in python 3.7 (default for arch)
 #    - python36
   script:
-    - TERM=screen
     - echo -e "travis_fold:start:MORE_INIT\033[33;1m$2\033[0m"
     #Moving packages into this fold.
     - echo "Install Packages:"
+    - export TERM=screen
     - set -o pipefail
     - ( yay -S fife-git --noconfirm 2>1 | tee tmp.log | while read line; do echo -ne "\033[2K\r"; echo -n $line ; done ) && echo "Fife-git installed fine." || ( echo "Fife-git failed:" ; cat tmp.log ; exit 1)
 
