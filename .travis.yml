@@ -7,11 +7,11 @@ arch:
   repos:
   packages:
     #FIFE: (from AUR)
-    - fife-git
-    - fifechan-git
+    # - fife-git
+    # - fifechan-git
     # Style tests:
-    - python-isort
-    - python-pycodestyle
+    # - python-isort
+    # - python-pycodestyle
     # Misc. Required for tests.
 #    - python-pytesti
 #    - python-pytest-isort
@@ -22,10 +22,17 @@ arch:
   script:
     - TERM=screen
     - echo -e "travis_fold:start:MORE INIT\033[33;1m$2\033[0m"
+    #Moving packages into this fold.
+    - yay -S fife-git --noconfirm
+    - yay -S fifechan-git --noconfirm
+    - yay -S python-isort  python-pycodestyle --noconfirm
+    #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
+    #Fix too-up-to-date python
     - python3.6 -m venv py36
     - source py36/bin/activate
     - pip install -r requirements.txt
+    #Regular build/testing.
     - echo -e "\ntravis_fold:end:MORE INIT\r"
     - python3 -c 'from fife import fife; print(fife.getVersion())'
     - isort -c -rc horizons tests *.py
