@@ -21,7 +21,7 @@ arch:
     
 
     - echo "Install Packages:"
-    - PYTHON_PKGS="python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-coverage python-greenlet python-yaml"
+    - PYTHON_PKGS="python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-coverage python-greenlet python-yaml python-polib"
     - INSTALLWRAPPER fifechan-git fife-git
     - INSTALLWRAPPER python $PYTHON_PKGS
 #    - MISCWRAPPER "PIP INSTALLS" sudo pip install -r requirements.txt
