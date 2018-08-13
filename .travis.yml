@@ -21,10 +21,10 @@ arch:
     
 
     - echo "Install Packages:"
- 
+    - PYTHON_PKGS="python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-coverage python-greenlet python-yaml"
     - INSTALLWRAPPER fifechan-git fife-git
-    - INSTALLWRAPPER python python-pip python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-greenlet
-    - MISCWRAPPER "PIP INSTALLS" sudo pip install -r requirements.txt
+    - INSTALLWRAPPER python $PYTHON_PKGS
+#    - MISCWRAPPER "PIP INSTALLS" sudo pip install -r requirements.txt
     
     #Chown for collections
     - sudo chown $UID $TRAVIS_BUILD_DIR -R
