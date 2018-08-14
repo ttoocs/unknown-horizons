@@ -24,7 +24,7 @@ arch:
     
 
     - echo "Install Packages:"
-    - PYTHON_PKGS="python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-coverage python-greenlet python-yaml python-polib python-pytest-mock"
+    - PYTHON_PKGS="python python-isort python-pycodestyle python-pytest python-pytest-isort python-pytest-cov python-coverage python-greenlet python-yaml python-polib python-pytest-mock python-pip"
     - INSTALLWRAPPER fifechan-git fife-git
     - INSTALLWRAPPER python $PYTHON_PKGS
     - INSTALLWRAPPER xorg-server-xvfb
